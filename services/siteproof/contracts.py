@@ -9,6 +9,7 @@ class Finding(BaseModel):
     severity: Literal["critical", "serious", "moderate", "minor"]
     claim: str
     evidence_ids: list[str] = Field(min_length=1)
+    guidance_ids: list[str] = Field(default_factory=list)
     confidence: float = Field(ge=0, le=1)
     kind: Literal["objective_defect", "design_hypothesis"]
     proposed_change: str
@@ -65,11 +66,15 @@ class Budget(BaseModel):
 def validate_findings(findings: list[dict], evidence: list[dict]) -> list[dict]:
     ids = {e["id"] for e in evidence}
     result = []
+    seen = set()
     for raw in findings:
         finding = Finding.model_validate(raw)
         if not set(finding.evidence_ids) <= ids:
             raise ValueError("Finding references nonexistent evidence")
-        result.append(finding.model_dump())
+        key = (finding.kind, finding.category, tuple(sorted(finding.evidence_ids)), finding.claim.strip().casefold())
+        if key not in seen:
+            seen.add(key)
+            result.append(finding.model_dump())
     return result
 
 

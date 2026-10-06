@@ -1,5 +1,6 @@
 """Explicit fixture/live providers. Remote cost is estimated from configured prices, never invented."""
 
+import hashlib
 import json
 import time
 from typing import Protocol
@@ -106,6 +107,10 @@ class LiveProvider:
         tokens = data.get("usage", {}).get("total_tokens")
         if tokens is None:
             raise ValueError("Embedding response omitted usage; budget accounting unavailable")
+        if data.get("model") != settings.embedding_model:
+            raise ValueError("Embedding response model differs from configured indexing model")
+        if sorted(i["index"] for i in data["data"]) != list(range(len(texts))):
+            raise ValueError("Embedding response has duplicate or missing input indices")
         vectors = [i["embedding"] for i in sorted(data["data"], key=lambda i: i["index"])]
         if len(vectors) != len(texts) or any(len(v) != 1536 for v in vectors):
             raise ValueError("Configured embedding model must return 1536-dimensional vectors")
@@ -202,7 +207,10 @@ class LiveProvider:
         raw = [f.model_dump() for f in parsed.findings]
         # A model may not label a passing test as an objective defect or self-approve.
         available = {e["id"]: e for e in evidence}
+        guidance_ids = {g["id"] for g in guidance}
         for finding in raw:
+            if not set(finding["guidance_ids"]) <= guidance_ids:
+                raise ValueError("Finding references nonexistent guidance sources")
             finding["approved"] = False
             if finding["kind"] == "objective_defect" and not any(
                 (available.get(i, {}).get("passed") is False or available.get(i, {}).get("kind") == "axe")
@@ -230,6 +238,10 @@ class LiveProvider:
             "cost_basis": "configured_price_estimate",
             "duration_ms": round((time.monotonic() - started) * 1000),
             "prompt_version": "auditor-v2",
+            "images_sent": [{"id": shot["id"], "sha256": hashlib.sha256(shot["png"].encode()).hexdigest()}
+                            for shot in chosen_images],
+            "guidance_ids": sorted(guidance_ids),
+            "response_model": data.get("model"),
         }
 
     def design(self, seed, facts, findings, budget):

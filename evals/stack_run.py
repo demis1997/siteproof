@@ -35,8 +35,11 @@ def wait_job(identifier):
 def main():
     report = {"mode": "fixture", "samples": [], "live_audit": "UNVERIFIED: credentials not configured"}
     for _ in range(120):
-        if httpx.get(API + "/ready").status_code == 200:
-            break
+        try:
+            if httpx.get(API + "/ready").status_code == 200:
+                break
+        except httpx.TransportError:
+            pass
         time.sleep(1)
     else:
         raise AssertionError("Stack not ready")
@@ -106,6 +109,8 @@ def main():
     identifier = report["samples"][0]["job_id"]
     request("DELETE", f"/api/jobs/{identifier}")
     assert httpx.get(API + f"/api/jobs/{identifier}", headers=HEADERS).status_code == 404
+    retrieval = compose("exec", "-T", "worker", "python", "evals/postgres_retrieval_run.py", "--tenant", "integration")
+    Path("evals/reports/stack/retrieval.json").write_text(retrieval)
     report["checks"] = ["real axe/Lighthouse", "authenticated PNG retrieval", "idempotency", "worker kill/restart", "persisted correction", "duplicate delivery", "tenant denial", "UI images and evidence navigation", "job deletion"]
     Path("evals/reports/stack/report.json").write_text(json.dumps(report, indent=2))
     print(json.dumps(report, indent=2))

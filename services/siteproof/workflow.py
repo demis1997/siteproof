@@ -143,14 +143,14 @@ def auditor(state):
 
     def diagnose():
         findings, run = model_provider.findings(state["evidence"], guidance, images=capture["screenshots"], budget=budget)
-        return {"findings": findings, "run": run}
+        budget.consume(tokens=run["tokens"], cost=run["cost"])
+        return {"findings": findings, "run": run, "budget": budget.model_dump()}
 
     diagnosed = once(state["tenant"], state["job_id"], "findings-v2", diagnose, paid=settings.mode == "live")
     findings, run = diagnosed["findings"], diagnosed["run"]
     db.save_records(state["tenant"], state["job_id"], "ModelRun", [dict(run, id="audit-model")])
     # Restore the pre-call budget on replay; charge the persisted result exactly once.
-    budget.consume(tokens=run["tokens"], cost=run["cost"])
-    state["budget"] = budget.model_dump()
+    state["budget"] = diagnosed["budget"]
     check(state)
     state["findings"] = findings
     db.save_records(state["tenant"], state["job_id"], "Finding", findings)

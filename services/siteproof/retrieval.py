@@ -85,7 +85,9 @@ def rerank(query, chunks):
     ]
 
 
-def retrieve(tenant, query, embedding=None, limit=5, collection="guidance", job_id=None):
+def retrieve(tenant, query, embedding=None, limit=5, collection="guidance", job_id=None, strategy="hybrid"):
+    if strategy not in ("keyword", "vector", "hybrid"):
+        raise ValueError("Unknown retrieval strategy")
     if collection not in ("guidance", "business_facts"):
         raise ValueError("Unknown retrieval collection")
     if collection == "business_facts" and not job_id:
@@ -114,6 +116,10 @@ def retrieve(tenant, query, embedding=None, limit=5, collection="guidance", job_
                 "ORDER BY c.embedding <=> %s::vector,c.id LIMIT 20",
                 (*args, settings.embedding_model, str(embedding)),
             ).fetchall()
+    if strategy == "keyword":
+        semantic = []
+    elif strategy == "vector":
+        lexical = []
     items = {row["id"]: row for row in lexical + semantic}
     seen, fused = set(), []
     for identifier in reciprocal_rank_fusion([lexical, semantic]):

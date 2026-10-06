@@ -92,7 +92,8 @@ def main():
             attempt = task.get("attempt", 0) + 1
             if retryable and attempt <= 3:
                 task["attempt"] = attempt
-                time.sleep(min(2**attempt + random.random(), 10))
+                browser_busy = isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code == 429
+                time.sleep(30 if browser_busy else min(2**attempt + random.random(), 10))
                 queue.lpush("siteproof:queue", json.dumps(task))
             else:
                 limited = isinstance(exc, ValueError) and ("budget" in str(exc).lower() or "limit" in str(exc).lower())
