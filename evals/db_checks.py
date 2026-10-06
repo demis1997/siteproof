@@ -10,6 +10,9 @@ from siteproof.retrieval import embedding_identity, retrieve
 
 def run(tenant, job_id):
     with db.connection() as conn:
+        count = conn.execute("SELECT count(*) AS count FROM checkpoints WHERE thread_id=%s",
+                             (f"{tenant}:{job_id}:audit:0",)).fetchone()["count"]
+        assert count > 0, "No persisted LangGraph checkpoints"
         # Share the connection so actual ranking functions see uncommitted vectors.
         previous = getattr(db._transaction, "connection", None)
         db._transaction.connection = conn

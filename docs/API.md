@@ -5,7 +5,7 @@ FastAPI publishes generated OpenAPI at `/docs`. The local API requires `X-Tenant
 - `POST /api/jobs`: `{ "url": "https://example.com", "goal": "optional" }`; require `Idempotency-Key`. Returns the existing job for the same key and URL, rejects key reuse for another URL.
 - `GET /api/jobs`: recent jobs owned by the authenticated tenant.
 - `GET /api/jobs/{id}`: status, stage, versions, budget and error data; dashboard polls this route.
-- `GET /api/jobs/{id}/evidence`, `/findings`, `/facts`, `/verification`, `/runs`, `/captures`: tenant-scoped records.
+- `GET /api/jobs/{id}/evidence`, `/findings`, `/facts`, `/verification`, `/runs`, `/captures`, `/guidance`: tenant-scoped records.
 - `POST /api/jobs/{id}/approve`: `{ "finding_ids": [], "fact_ids": [] }`; rejects unknown identifiers and records approval.
 - `POST /api/jobs/{id}/redesign`: requires audit completion and approval of findings and facts.
 - `GET /api/jobs/{id}/preview`: typed page specification.
@@ -22,3 +22,5 @@ Errors use HTTP 401 for missing authentication, 404 for absent owned resources, 
 `DELETE /api/jobs/{id}` deletes an inactive tenant-owned job, artifacts, retrieval facts and checkpoints; active/busy jobs return 409. See the retention command and limitations in `SECURITY.md`.
 
 `SITEPROOF_TENANT_KEYS_JSON` optionally supplies a JSON mapping of tenant identifiers to unique keys. Migration seeds each configured tenant and its own guidance corpus. The default local-development key is for a loopback-bound development instance only.
+
+Guidance responses retain the source, version, reuse notes, and content seen by this job. A stored snapshot prevents later corpus edits from changing historical citations.

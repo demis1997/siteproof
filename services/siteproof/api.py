@@ -155,6 +155,8 @@ def detail(job_id: str, t: str = Depends(tenant)):
 def items(job_id: str, kind: str, t: str = Depends(tenant)):
     job = job_or_404(t, job_id)
     if kind == "guidance":
+        if "guidance_snapshot" in job["data"]:
+            return {"items": job["data"]["guidance_snapshot"]}
         ids = job["data"].get("guidance_ids", [])
         with db.connection() as conn:
             rows = conn.execute(

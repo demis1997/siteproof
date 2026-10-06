@@ -104,7 +104,7 @@ def retrieve(tenant, query, embedding=None, limit=5, collection="guidance", job_
         scope += " AND d.job_id=%s"
         args.append(job_id)
     base = (
-        "SELECT c.id,c.content,c.content_hash,d.source,d.version,d.reuse_notes FROM knowledge_chunks c "
+        "SELECT c.id,c.content,c.content_hash,d.source,d.version,d.retrieved_at::text AS retrieved_at,d.reuse_notes FROM knowledge_chunks c "
         "JOIN knowledge_documents d ON d.id=c.document_id AND d.tenant_id=c.tenant_id WHERE " + scope
     )
     with connection() as conn:

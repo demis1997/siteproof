@@ -161,6 +161,7 @@ def auditor(state):
         {
             "fixture": settings.mode == "fixture",
             "guidance_ids": [g["id"] for g in guidance],
+            "guidance_snapshot": guidance,
             "versions": {"prompt": "auditor-v2", "guidance": "guidance-v1", "renderer": "components-v1"},
             "elapsed_seconds": state["budget"].get("elapsed_seconds"),
             "budget": state["budget"],
