@@ -1,32 +1,61 @@
 # SiteProof
 
-Evidence-backed homepage auditing and private redesign verification for English-language service businesses. The acceptance gate requires every mandatory executable check at desktop **1440 × 1000** and mobile **390 × 844**. Design hypotheses remain unverified; failed or missing checks prevent preview acceptance.
+[![SiteProof checks](https://github.com/demis1997/siteproof/actions/workflows/ci.yml/badge.svg)](https://github.com/demis1997/siteproof/actions/workflows/ci.yml)
 
-This repository implements a single-host vertical slice, with explicit deterministic fixture mode and an OpenAI-compatible live provider. It does not publish websites or claim conversion improvement. See [implementation plan](docs/IMPLEMENTATION_PLAN.md) and [architecture](docs/ARCHITECTURE.md).
+A homepage audit and private redesign system that tests whether a redesign fixes the problems it identified. Findings link to inspectable evidence; failed or missing required checks prevent acceptance.
 
-## Local application
+![Actual fixture dashboard showing before/after captures](evals/reports/phase34/phase34-comparison.png)
 
-Requires Docker Engine with Compose, network access for image/dependency downloads, and approximately 4 GB available RAM. Run from this project folder:
+*Captured from the local application with a labelled fixture provider and synthetic service business. This demonstrates rendering and verification, not live model quality.*
+
+## Implemented capabilities
+
+- Desktop/mobile Playwright capture, DOM geometry, axe and repeated Lighthouse checks.
+- Typed findings with validated evidence references; approved business facts with source/capture provenance.
+- Separate facts and guidance collections; PostgreSQL full-text/vector retrieval, reciprocal rank fusion, tenant filtering and content-hash caching.
+- Three bounded LangGraph roles: Auditor, Designer and Verifier; PostgreSQL checkpoints and durable step journals.
+- Controlled React specifications, authenticated noindex previews, maximum two repairs and explicit human acceptance.
+- Tenant-owned jobs/artifacts, SSRF protections, DNS-pinning proxy, browser network isolation, cancellation and budgets.
+
+```mermaid
+flowchart LR
+  UI[Next.js dashboard] --> API[FastAPI / authorization]
+  API --> Q[Redis queue]
+  Q --> W[Python / LangGraph]
+  W --> PG[(PostgreSQL / pgvector / checkpoints)]
+  W --> B[Isolated Playwright / axe / Lighthouse]
+  B --> E[Restricted DNS-pinning proxy]
+  W --> S[(MinIO artifacts)]
+  W --> R[Controlled React renderer]
+  R --> B
+  B --> V[Executable verification]
+  V --> H[Human acceptance gate]
+```
+
+## No-key fixture demo
+
+Requires Docker Compose and network access for dependency/image downloads. Run from this repository root:
 
 ```sh
 test -f .env || cp .env.example .env
-docker compose --env-file .env -f infra/compose.yaml up --build -d
-docker compose --env-file .env -f infra/compose.yaml logs -f api worker browser web
-```
-
-Open http://localhost:3000 and sign in with the development tenant access key from `.env`. Fixture mode is visibly labelled. Submit `https://fixture.siteproof.test/overflow`, inspect source evidence, approve findings/facts, request a redesign, inspect verification, and accept only after required checks pass. Other fixture slugs: `clean`, `broken-contact`, `missing-labels`, `weak-navigation`, `conflicting-facts`, `prompt-injection`, `timeout`, `partial`.
-
-```sh
+docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration up -d --build
 curl http://localhost:8000/health
 curl http://localhost:8000/ready
-docker compose --env-file .env -f infra/compose.yaml down
 ```
 
-Data persists in PostgreSQL, Redis AOF, and MinIO volumes. `down -v` permanently deletes local data. Private artifacts are streamed through tenant-authorized API requests. Preview HTML is authenticated, noindex, and served with a restrictive CSP. Browser workers have only an internal network and a DNS-pinning egress proxy; do not expose the capture service or remove its isolation.
+Open http://localhost:3000, sign in with `integration-key` (a public local test credential), and submit `http://fixture.siteproof.test/overflow`. Inspect both viewports, approve findings/facts, request a redesign and review its verification. Fixture labels remain visible. Only passing checks permit acceptance.
 
-## Development checks
+The integration override explicitly clears provider credentials even if the private root `.env` is live. Run one stack at a time on these ports. Its exact-host fixture exception is for controlled testing; do not expose this profile publicly.
 
-Python 3.12 and Node.js 22.20 or later are supported development runtimes. Python dependencies and browser-tool dependencies are locked separately from the web app.
+```sh
+docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration down
+```
+
+Volumes persist; `down -v` deletes data. See the [demo script](docs/DEMO.md) and [full stack commands](docs/PHASE34.md).
+
+## Checks and observed results
+
+Python 3.12 and Node.js 22.20+:
 
 ```sh
 python3.12 -m venv .venv
@@ -35,39 +64,34 @@ pip install -r requirements.lock
 ruff check services evals
 pytest
 python evals/run.py
-npm ci --prefix infra
 npm ci --prefix apps/web
 npm run lint --prefix apps/web
 npm run typecheck --prefix apps/web
 npm run build --prefix apps/web
+# With the fixture stack running:
+python evals/stack_run.py
+python evals/phase34_run.py
+python evals/regression_gate.py
+python evals/phase34_recovery.py
+python evals/phase34_ui_run.py
 ```
 
-For browser evaluation, run the web server and the harness as documented in [evaluation methodology](docs/EVALUATION.md). GitHub Actions also defines a browser slice on Ubuntu. The original isolated browser job passed on GitHub; full-stack Phase 1–2 verification is tracked in [the milestone checklist](docs/PHASE12.md).
+The [validated implementation CI run](https://github.com/demis1997/siteproof/actions/runs/37531750994) passed backend, frontend, browser-slice and real-stack jobs. Recorded checks include 138 Python tests, four renderer tests, two Lighthouse samples per viewport before/after, regression rejection, two-repair exhaustion, real worker SIGKILL recovery and private-preview UI checks. These are linked historical observations, not guaranteed future CI outcomes.
 
-## Live provider configuration
+The [fixture report](evals/reports/phase34/report.md) records one normal redesign and three concurrent development audits: **3/3 completed**, queue-inclusive p50 **88.18s**, p95 **130.27s**; one worker, browser/domain limit one, macOS ARM host, Docker 14 CPUs / approximately 8 GB RAM. This is a small synthetic sample, **not a production load benchmark**. Development category counts were 1 TP / 0 FP / 0 FN across three pages. Labels are agent-authored and pending independent review; the preserved historical test group was used in earlier milestones and is not independently unseen.
 
-Set `SITEPROOF_MODE=live`, `SITEPROOF_MODEL_KEY`, model/base URL, and separate embedding credentials (or explicit confirmed sharing) in `.env`. Configure the three current USD price settings for monetary enforcement; otherwise cost stays unknown with strict token/call limits. Live mode never substitutes fixture responses. Prices are user-configured estimates, not an invoice; unmeasured costs remain unknown. Structured outputs and screenshot inputs use the official [Chat Completions contract](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create); embeddings use the official [embedding contract](https://developers.openai.com/api/reference/resources/embeddings/methods/create). Changing models requires testing modality support, schema support, embedding dimensions, and the conservative vision-token allowance. See [provider details](docs/PROVIDERS.md).
+## Validation boundaries
 
-## Evidence and limits
+**Real-stack fixture validation:** capture, redesign, verification, recovery and UI passed the linked checks.
 
-DOM selectors, actual axe violations, viewport checks and Lighthouse results retain stable evidence IDs. Model findings referencing unknown IDs are rejected. All original content is treated as untrusted data. Contact facts retain source/capture provenance; candidate services and conflicting details need human approval. Only approved components render generated specifications, and the exact rendered HTML is captured and shown privately.
+**Live AI: BLOCKED.** Live vision/text and embedding paths are implemented, but zero OpenAI balance stopped validation. No successful live vision/text audit or real-embedding comparison establishes quality. Live model quality, semantic retrieval and actual inference costs remain blocked. Synthetic vectors test retrieval mechanics only. Existing validation reservations are preserved; live jobs never silently switch to fixtures.
 
-Private previews now receive two real Lighthouse measurements at each documented viewport through an ephemeral isolated document capability. Automated testing does not establish WCAG compliance. Link checks cover homepage fragment targets only; other pages are outside this job's scope. A three-job fixture-provider load test is recorded separately; no real-client conversion experiment or independent human design study has been performed.
+**Unresolved:** one of two development no-answer queries returned irrelevant keyword guidance. The [diagnosis](evals/reports/phase34/no-answer-development.md) records this failure without tuning held-out labels. Independent human design review remains pending.
 
-See [API](docs/API.md), [security boundaries](docs/SECURITY.md), [deployment](docs/DEPLOYMENT.md), [baseline limitations](docs/BASELINES.md), and [demo/resume templates](docs/DEMO.md). Actual measured static-fixture results are in [the contract report](evals/reports/report.md). The historical host-browser failure report records an earlier sandbox limitation; subsequent real Docker capture and UI checks are tracked in [Phase 1–2 validation](docs/PHASE12.md).
+## Decisions and security
 
-## Verification in this development session
+Constrained components prevent arbitrary model-generated code and dependencies. PostgreSQL combines tenant-owned facts, hybrid retrieval and checkpoints without a second search service. Executable failures cannot be waived by model opinion; passing checks still require human acceptance.
 
-The final observed check results and remaining integration requirements are recorded in `docs/VALIDATION.md`. Real Docker services and browser checks are exercised separately from unit tests. Live model requests remain unverified without credentials and configured prices.
+Scope is one public English-language service-business homepage, without login or publishing. Approved contact facts are preserved. Automated checks do not prove WCAG compliance, conversion gains or production scalability. Link checks cover homepage fragments only. Public-site network performance and isolated preview performance are different measurement environments.
 
-## Phase 1–2 integration milestone
-
-See [the observed checklist and exact commands](docs/PHASE12.md). The integration profile uses an explicitly enabled HTTP fixture host to exercise real Lighthouse through the isolated proxy. Production/live URL restrictions remain enabled. MinIO now builds a pinned upstream source release because public prebuilt-image pulls returned access denied. Live AI and semantic retrieval results require private credentials and configured prices.
-
-## Live AI and expanded retrieval validation
-
-See [live configuration, budgets and exact commands](docs/LIVE_VALIDATION.md). The separate benchmark has 18 documents and 32 development/held-out queries; author-created labels still require independent human review. Real PostgreSQL keyword results are reported separately from blocked semantic/live checks. No paid calls run without credentials or an explicit operator command.
-
-## Phase 3–4 fixture verification
-
-See [implementation, exact commands, dataset and limitations](docs/PHASE34.md). The real-stack fixture pipeline covers redesign capture, before/after Lighthouse and axe, regression rejection, bounded repairs and private review controls. Live model quality, semantic retrieval and actual inference costs are BLOCKED while the OpenAI balance is zero. No paid requests will be retried.
+Read [architecture](docs/ARCHITECTURE.md), [security](docs/SECURITY.md), [API](docs/API.md), [providers](docs/PROVIDERS.md), [evaluation](docs/EVALUATION.md), [deployment](docs/DEPLOYMENT.md), [final status](docs/PHASE34_FINAL_STATUS.md), and [future live commands](docs/LIVE_BENCHMARK_LATER.md). Earlier useful operational notes remain in the [previous README](docs/README_LEGACY.md).
