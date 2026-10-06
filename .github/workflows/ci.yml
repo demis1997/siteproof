@@ -112,6 +112,7 @@ jobs:
           docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration exec -T -e SITEPROOF_CODE_COMMIT="$GITHUB_SHA" worker python evals/semantic_retrieval_run.py > evals/reports/live/retrieval.json
           docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration exec -T -e SITEPROOF_CODE_COMMIT="$GITHUB_SHA" worker python evals/live_audit_run.py > evals/reports/live/audit.json
           docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration exec -T worker python evals/live_limits_checks.py > evals/reports/live/allocation-checks.txt
+          python evals/write_live_report.py
       - name: Collect diagnostics
         if: always()
         run: docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration logs --no-color > evals/reports/stack-services.log

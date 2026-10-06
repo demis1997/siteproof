@@ -24,3 +24,7 @@ Errors use HTTP 401 for missing authentication, 404 for absent owned resources, 
 `SITEPROOF_TENANT_KEYS_JSON` optionally supplies a JSON mapping of tenant identifiers to unique keys. Migration seeds each configured tenant and its own guidance corpus. The default local-development key is for a loopback-bound development instance only.
 
 Guidance responses retain the source, version, reuse notes, and content seen by this job. A stored snapshot prevents later corpus edits from changing historical citations.
+
+## Live validation policy
+
+Live job creation returns structured 503 errors for missing chat/embedding credentials, and for missing prices only when `SITEPROOF_REQUIRE_KNOWN_PRICES=true`. Otherwise unknown pricing retains null cost with strict token/call/time limits. An explicit monetary budget still requires pricing. The initial server-side validation ledger caps new live API jobs at three per configured shared session; exhausted allocations or absent required USD/EUR conversion return 409 `validation_budget`. Idempotent duplicates reuse the job without a second allocation. See `LIVE_VALIDATION.md`; this operator validation cap is not provider-account billing control.

@@ -17,6 +17,8 @@ import httpx
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "services"))
 from siteproof.config import settings
+from siteproof.db import connection
+from siteproof.retrieval import embedding_identity
 from siteproof.security import validate_url
 
 
@@ -78,6 +80,32 @@ def inspect_findings(findings, evidence, guidance):
             }
         )
     return reviews
+
+
+def facts_preserved(original, current, evidence):
+    ids = {e["id"] for e in evidence}
+    saved = {f["id"]: f for f in current}
+    for source in original:
+        fact = saved.get(source["id"])
+        if (
+            not fact
+            or fact["evidence_id"] not in ids
+            or not fact.get("captured_at")
+            or fact["source_url"] != source["source_url"]
+        ):
+            return False
+        value = source["value"]
+        for correction in fact.get("corrections", []):
+            if (
+                correction.get("previous_value") != value
+                or not correction.get("reason")
+                or not correction.get("timestamp")
+            ):
+                return False
+            value = correction["corrected_value"]
+        if fact["value"] != value:
+            return False
+    return True
 
 
 def run(api, tenant, url=None, session="live-validation-v1", job_id=None):
@@ -170,10 +198,22 @@ def run(api, tenant, url=None, session="live-validation-v1", job_id=None):
         )
         review = inspect_findings(data["findings"], data["evidence"], data["guidance"])
         embedding_runs = [r for r in data["runs"] if r["id"].startswith("embedding-")]
+        with connection() as conn:
+            capture = conn.execute(
+                "SELECT result FROM workflow_steps WHERE tenant_id=%s AND job_id=%s AND step='capture-v1' AND status='succeeded'",
+                (job["tenant_id"], job_id),
+            ).fetchone()
+        preserved = bool(capture) and facts_preserved(capture["result"]["facts"], data["facts"], data["evidence"])
+        vectors_used = (
+            audit_run.get("retrieval_strategy") == "hybrid"
+            and audit_run.get("embedding_identity") == embedding_identity()
+        )
         report.update(
             status="PASS"
             if real
             and image_match
+            and preserved
+            and vectors_used
             and audit_run.get("response_model")
             and not any(r["support"] == "unsupported" for r in review)
             else "FAIL",
@@ -182,6 +222,8 @@ def run(api, tenant, url=None, session="live-validation-v1", job_id=None):
             retry_count=job.get("retry_count"),
             error=job.get("error"),
             images_match_transmitted_bytes=image_match,
+            critical_business_facts_preserved=preserved,
+            provider_embedding_identity_used=vectors_used,
             runs=data["runs"],
             guidance=data["guidance"],
             finding_review=review,

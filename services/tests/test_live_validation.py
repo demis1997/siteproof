@@ -280,3 +280,29 @@ def test_large_vision_capture_reserves_more_than_fixed_allowance(setup):
     header = b"\x89PNG\r\n\x1a\n" + b"\x00\x00\x00\rIHDR" + struct.pack(">II", 1440, 6000)
     assert vision_reserve(header) > settings.vision_token_allowance
     assert vision_reserve(header) <= math.ceil(6144 * 1.62) + 256
+
+
+def test_live_fact_review_requires_exact_value_or_recorded_correction():
+    from live_audit_run import facts_preserved
+
+    original = [
+        {
+            "id": "phone",
+            "value": "+12025550123",
+            "source_url": "https://example.com",
+            "evidence_id": "dom",
+            "captured_at": "now",
+        }
+    ]
+    changed = [dict(original[0], value="+12025550124")]
+    assert not facts_preserved(original, changed, [{"id": "dom"}])
+    changed[0]["corrections"] = [
+        {
+            "previous_value": "+12025550123",
+            "corrected_value": "+12025550124",
+            "reason": "User correction",
+            "timestamp": "now",
+        }
+    ]
+    assert facts_preserved(original, changed, [{"id": "dom"}])
+    assert not facts_preserved(original, changed, [])
