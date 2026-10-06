@@ -1,5 +1,5 @@
 {
-  "job_id": "00be016b-0eae-4069-9c82-2826c65fc933",
+  "job_id": "32eec524-7bdd-4e7e-9da1-931370b59dd4",
   "targeted_repair": true,
   "facts_preserved": true,
   "verification": [
@@ -57,7 +57,7 @@
         {
           "after": {
             "seo": 0.45,
-            "performance": 0.995,
+            "performance": 1.0,
             "accessibility": 1.0,
             "best-practices": 1.0
           },
@@ -73,6 +73,6 @@
       "required_checks_passed": true
     }
   ],
-  "redesign_latency_seconds": 67.51614241697825,
+  "redesign_latency_seconds": 71.93457879201742,
   "review_boundary": "API accept/reject exercised by test script, not independent human quality acceptance"
 }

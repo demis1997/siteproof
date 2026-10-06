@@ -1,7 +1,7 @@
 {
   "mode": "fixture",
   "sample_size": 3,
-  "submission_concurrency": 1,
+  "submission_concurrency": 3,
   "worker_count": 1,
   "per_domain_limit": 1,
   "browser_limit": 1,
@@ -12,17 +12,16 @@
   },
   "completion_count": 3,
   "failures": [],
-  "p50_latency_seconds": 114.35646620899206,
-  "p95_latency_seconds": 187.61313141696155,
+  "p50_latency_seconds": 88.180058,
+  "p95_latency_seconds": 130.274199,
   "latencies_seconds": [
-    63.37144087499473,
-    114.35646620899206,
-    187.61313141696155
+    46.080129,
+    130.274199,
+    88.180058
   ],
+  "submission_started_at": "2026-10-06T21:27:39.899853+00:00",
   "limitations": [
     "Small fixture-provider queue burst; not live inference capacity or a scalability benchmark.",
-    "Latency measured from shared submission start to each observed completion.",
-    "This local observation used three closely spaced sequential HTTP submissions; future harness uses concurrent requests."
-  ],
-  "queued_burst_size": 3
+    "Latency uses persisted review-state updated_at minus shared submission start, including queue wait; host/container clocks must agree."
+  ]
 }

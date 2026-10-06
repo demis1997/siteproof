@@ -1,11 +1,11 @@
 # Observed real-stack fixture integration
 Completed fixture samples: 6.
-- clean: PASS; evidence=20, findings=0, facts=6
-- overflow: PASS; evidence=20, findings=1, facts=6
-- broken-contact: PASS; evidence=20, findings=2, facts=6
-- missing-labels: PASS; evidence=22, findings=6, facts=6
-- conflicting-facts: PASS; evidence=20, findings=0, facts=8
-- prompt-injection: PASS; evidence=20, findings=0, facts=6
+- clean: PASS; evidence=20, findings=0, facts=4
+- overflow: PASS; evidence=20, findings=1, facts=4
+- broken-contact: PASS; evidence=20, findings=2, facts=4
+- missing-labels: PASS; evidence=22, findings=6, facts=4
+- conflicting-facts: PASS; evidence=20, findings=0, facts=6
+- prompt-injection: PASS; evidence=20, findings=0, facts=4
 
 ## PostgreSQL retrieval
 Corpus documents: 4; queries: 4.

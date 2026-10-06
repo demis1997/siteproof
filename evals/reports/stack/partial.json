@@ -1,59 +1,59 @@
 {
-  "run_id": "ea9777e9-ff6b-4d1f-81fe-a48a7d14c8ab",
+  "run_id": "d5145886-f1eb-40d4-9e22-e5c9159f0d45",
   "mode": "fixture",
   "samples": [
     {
       "slug": "clean",
-      "job_id": "ac3c699e-a8cb-42e8-9b56-21957556f5de",
+      "job_id": "b094b8c2-728c-43c6-8bc6-e0306c832bf8",
       "evidence": 20,
       "findings": 0,
-      "facts": 6,
+      "facts": 4,
       "status": "PASS"
     },
     {
       "slug": "overflow",
-      "job_id": "4a5583a8-aed1-4d2d-bd7c-53fa72281d48",
+      "job_id": "e9363739-983e-4d61-875b-42fdd03927a1",
       "evidence": 20,
       "findings": 1,
-      "facts": 6,
+      "facts": 4,
       "status": "PASS"
     },
     {
       "slug": "broken-contact",
-      "job_id": "0290f156-34ba-4a72-82be-5fc3b0047324",
+      "job_id": "e198543c-82a3-453d-9947-9988b7520706",
       "evidence": 20,
       "findings": 2,
-      "facts": 6,
+      "facts": 4,
       "status": "PASS"
     },
     {
       "slug": "missing-labels",
-      "job_id": "9f0f3a5d-441c-411c-b44b-b092e2ca2c84",
+      "job_id": "a652e026-6a3c-4c39-b0f4-b283221a52e1",
       "evidence": 22,
       "findings": 6,
-      "facts": 6,
+      "facts": 4,
       "status": "PASS"
     },
     {
       "slug": "conflicting-facts",
-      "job_id": "758f47f4-c7ad-400d-8fc3-b5b2d32c417a",
+      "job_id": "6ceca50c-b9ac-4360-b0c8-16aad88d3cad",
       "evidence": 20,
       "findings": 0,
-      "facts": 8,
+      "facts": 6,
       "status": "PASS"
     },
     {
       "slug": "prompt-injection",
-      "job_id": "34beb7fc-f615-43c5-8191-cf464c059b55",
+      "job_id": "8c56104b-eb3d-4bff-8414-b09e2edb7e55",
       "evidence": 20,
       "findings": 0,
-      "facts": 6,
+      "facts": 4,
       "status": "PASS"
     }
   ],
   "live_audit": "UNVERIFIED: credentials not configured",
   "timeout": {
-    "job_id": "c562f319-1b71-4cd7-aa25-91c8af9a1809",
+    "job_id": "10e0afb0-1faa-4094-9318-40069a14d14d",
     "partial": true,
     "status": "PASS"
   }

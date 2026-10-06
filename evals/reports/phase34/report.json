@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-06T20:26:13.581708+00:00",
+  "generated_at": "2026-10-06T21:29:55.007381+00:00",
   "mode": "fixture",
   "pipeline": {
-    "job_id": "00be016b-0eae-4069-9c82-2826c65fc933",
+    "job_id": "32eec524-7bdd-4e7e-9da1-931370b59dd4",
     "targeted_repair": true,
     "facts_preserved": true,
     "verification": [
@@ -60,7 +60,7 @@
           {
             "after": {
               "seo": 0.45,
-              "performance": 0.995,
+              "performance": 1.0,
               "accessibility": 1.0,
               "best-practices": 1.0
             },
@@ -76,7 +76,7 @@
         "required_checks_passed": true
       }
     ],
-    "redesign_latency_seconds": 67.51614241697825,
+    "redesign_latency_seconds": 71.93457879201742,
     "review_boundary": "API accept/reject exercised by test script, not independent human quality acceptance"
   },
   "faults": {
@@ -85,12 +85,13 @@
     "scenarios": [
       {
         "scenario": "repaired-regression",
-        "job_id": "32de4ab5-4d5e-4eca-9dd6-606584152a31",
+        "job_id": "27b71c2f-0745-4b9d-a8c6-3fb9d79c85fc",
         "repair_attempts": 1,
         "verification_passed": true,
         "human_accepted": false,
-        "latency_seconds": 168.46921428599853,
+        "latency_seconds": 131.82596085100158,
         "duplicate_delivery_no_new_evidence": true,
+        "redesign_history_count": 2,
         "verification": [
           {
             "id": "verification-1-0",
@@ -236,12 +237,13 @@
       },
       {
         "scenario": "repair-exhaustion",
-        "job_id": "0da0c02c-701c-448b-97cd-22601c700276",
+        "job_id": "cc340a6e-1c8e-45b3-ac20-91ef7741a328",
         "repair_attempts": 2,
         "verification_passed": false,
         "human_accepted": false,
-        "latency_seconds": 220.70719730899873,
+        "latency_seconds": 171.6347782869998,
         "duplicate_delivery_no_new_evidence": true,
+        "redesign_history_count": 3,
         "verification": [
           {
             "id": "verification-1-0",
@@ -407,7 +409,8 @@
               "Design hypotheses require human or live-user validation."
             ],
             "regressions": [
-              "after-1-2-horizontal_overflow-desktop"
+              "after-1-2-horizontal_overflow-desktop",
+              "after-1-2-contact_visible-mobile"
             ],
             "missing_checks": [],
             "facts_preserved": true,
@@ -464,7 +467,7 @@
   "load": {
     "mode": "fixture",
     "sample_size": 3,
-    "submission_concurrency": 1,
+    "submission_concurrency": 3,
     "worker_count": 1,
     "per_domain_limit": 1,
     "browser_limit": 1,
@@ -475,19 +478,18 @@
     },
     "completion_count": 3,
     "failures": [],
-    "p50_latency_seconds": 114.35646620899206,
-    "p95_latency_seconds": 187.61313141696155,
+    "p50_latency_seconds": 88.180058,
+    "p95_latency_seconds": 130.274199,
     "latencies_seconds": [
-      63.37144087499473,
-      114.35646620899206,
-      187.61313141696155
+      46.080129,
+      130.274199,
+      88.180058
     ],
+    "submission_started_at": "2026-10-06T21:27:39.899853+00:00",
     "limitations": [
       "Small fixture-provider queue burst; not live inference capacity or a scalability benchmark.",
-      "Latency measured from shared submission start to each observed completion.",
-      "This local observation used three closely spaced sequential HTTP submissions; future harness uses concurrent requests."
-    ],
-    "queued_burst_size": 3
+      "Latency uses persisted review-state updated_at minus shared submission start, including queue wait; host/container clocks must agree."
+    ]
   },
   "cancellation": "PASS",
   "comparisons": {
@@ -514,7 +516,7 @@
     "Live A/B/C quality comparison remains blocked."
   ],
   "source_provenance": {
-    "base_commit": "e78b7911003534b320c9a41b0ecebb06a3cb92fe",
+    "base_commit": "61fed5e9fc86716a59c1e92dfb8a877a439d91fd",
     "working_tree_changes": true,
     "note": "GitHub CI records its exact committed source revision; local observations include implementation working-tree changes."
   },
@@ -543,7 +545,7 @@
     "boundary": "Actual worker SIGKILL during deterministic preview capture; no paid requests or simulated recovery."
   },
   "ui": {
-    "job_id": "00be016b-0eae-4069-9c82-2826c65fc933",
+    "job_id": "32eec524-7bdd-4e7e-9da1-931370b59dd4",
     "mode": "fixture",
     "status": "PASS",
     "checks": [
@@ -569,6 +571,6 @@
     "reserved_usd": 2,
     "unallocated_usd": 3.6345,
     "actual_cost_usd": null,
-    "note": "Existing ledger reservations preserved; not measured invoice charges."
+    "note": "Preserved local live-ledger SQL snapshot, not a CI account probe or measured invoice charges."
   }
 }

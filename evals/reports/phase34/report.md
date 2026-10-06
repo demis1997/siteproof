@@ -8,7 +8,7 @@ Development labels: 1 TP, 0 FP, 0 FN categories across 3 pages; two supported vi
 
 Controlled fault checks: initial regression rejected; one layout repair passed; persistent overflow stopped after two repairs; failed acceptance returned HTTP 409. Duplicate delivery created no additional evidence.
 
-Fixture load: 3/3 completed; queue-inclusive p50 114.36s, p95 187.61s. Three observations, one worker, browser/domain limit one; not scalability or inference throughput.
+Fixture load: 3/3 completed; queue-inclusive p50 88.18s, p95 130.27s. Three observations, one worker, browser/domain limit one; not scalability or inference throughput.
 
 Redesign worker restart: PASS. UI browser checks: PASS.
 

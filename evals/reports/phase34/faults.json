@@ -4,12 +4,13 @@
   "scenarios": [
     {
       "scenario": "repaired-regression",
-      "job_id": "32de4ab5-4d5e-4eca-9dd6-606584152a31",
+      "job_id": "27b71c2f-0745-4b9d-a8c6-3fb9d79c85fc",
       "repair_attempts": 1,
       "verification_passed": true,
       "human_accepted": false,
-      "latency_seconds": 168.46921428599853,
+      "latency_seconds": 131.82596085100158,
       "duplicate_delivery_no_new_evidence": true,
+      "redesign_history_count": 2,
       "verification": [
         {
           "id": "verification-1-0",
@@ -155,12 +156,13 @@
     },
     {
       "scenario": "repair-exhaustion",
-      "job_id": "0da0c02c-701c-448b-97cd-22601c700276",
+      "job_id": "cc340a6e-1c8e-45b3-ac20-91ef7741a328",
       "repair_attempts": 2,
       "verification_passed": false,
       "human_accepted": false,
-      "latency_seconds": 220.70719730899873,
+      "latency_seconds": 171.6347782869998,
       "duplicate_delivery_no_new_evidence": true,
+      "redesign_history_count": 3,
       "verification": [
         {
           "id": "verification-1-0",
@@ -326,7 +328,8 @@
             "Design hypotheses require human or live-user validation."
           ],
           "regressions": [
-            "after-1-2-horizontal_overflow-desktop"
+            "after-1-2-horizontal_overflow-desktop",
+            "after-1-2-contact_visible-mobile"
           ],
           "missing_checks": [],
           "facts_preserved": true,
