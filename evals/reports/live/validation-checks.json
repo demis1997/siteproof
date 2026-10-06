@@ -39,5 +39,12 @@
     "independent_relevance_review": false,
     "live_hypothesis_review": false
   },
-  "observation_environment": "local Docker and host tests; not a claim about pending CI"
+  "observation_environment": "local Docker and host tests; not a claim about pending CI",
+  "final_backend_recheck": {
+    "tested_application_commit": "200b72a07ce650860b9b741eb68d3b7583d3682f",
+    "lint": "PASS",
+    "tests": "PASS",
+    "test_count": 110,
+    "scope": "Elapsed provider time-budget correction; prior benchmark and fixture observations retain their original provenance."
+  }
 }
