@@ -17,3 +17,12 @@ services:
     environment:
       SITEPROOF_MODE: fixture
       SITEPROOF_TEST_FIXTURE_HTTP: 'true'
+  ui-test:
+    profiles: [ui-test]
+    image: siteproof-integration-browser
+    init: true
+    networks: [control, egress]
+    shm_size: 512m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    command: [python, evals/ui_run.py]

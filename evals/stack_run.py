@@ -2,10 +2,10 @@
 import json
 import subprocess
 import time
+import uuid
 from pathlib import Path
 
 import httpx
-from playwright.sync_api import sync_playwright
 
 API = "http://127.0.0.1:8000"
 HEADERS = {"X-Tenant-Key": "integration-key"}
@@ -33,7 +33,8 @@ def wait_job(identifier):
 
 
 def main():
-    report = {"mode": "fixture", "samples": [], "live_audit": "UNVERIFIED: credentials not configured"}
+    run_id = str(uuid.uuid4())
+    report = {"run_id": run_id,"mode": "fixture", "samples": [], "live_audit": "UNVERIFIED: credentials not configured"}
     readiness = "No response"
     for _ in range(120):
         try:
@@ -48,7 +49,7 @@ def main():
         raise AssertionError("Stack not ready: " + readiness)
     for slug in ("clean", "overflow", "broken-contact", "missing-labels", "conflicting-facts", "prompt-injection"):
         url = f"http://fixture.siteproof.test/{slug}"
-        headers = dict(HEADERS, **{"Idempotency-Key": "integration-" + slug})
+        headers = dict(HEADERS, **{"Idempotency-Key": "integration-" + run_id + "-" + slug})
         response = httpx.post(API + "/api/jobs", headers=headers, json={"url": url})
         response.raise_for_status()
         job = response.json()
@@ -98,7 +99,7 @@ def main():
             time.sleep(6)
             assert len(request("GET", f"/api/jobs/{identifier}/runs")["items"]) == 1
         report["samples"].append({"slug": slug, "job_id": identifier, "evidence": len(evidence), "findings": len(findings), "facts": len(facts), "status": "PASS"})
-    response = httpx.post(API + "/api/jobs", headers=dict(HEADERS, **{"Idempotency-Key": "integration-timeout"}),
+    response = httpx.post(API + "/api/jobs", headers=dict(HEADERS, **{"Idempotency-Key": "integration-timeout-" + run_id}),
                           json={"url": "http://fixture.siteproof.test/timeout"})
     response.raise_for_status()
     timeout_job = response.json()["id"]
@@ -108,21 +109,10 @@ def main():
     timeout_evidence = request("GET", f"/api/jobs/{timeout_job}/evidence")["items"]
     assert any(e["kind"] == "unavailable" and e["name"] == "capture" for e in timeout_evidence)
     report["timeout"] = {"job_id": timeout_job, "partial": True, "status": "PASS"}
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page(viewport={"width": 1440, "height": 1000})
-        page.goto("http://127.0.0.1:3000")
-        page.get_by_label("Tenant access key").fill("integration-key")
-        page.get_by_role("button", name="Connect workspace").click()
-        page.get_by_role("button").filter(has_text="http://fixture.siteproof.test/overflow").click()
-        page.locator(".evidence img").first.wait_for()
-        assert page.locator(".fixture").is_visible()
-        page.wait_for_function("()=>{const imgs=[...document.querySelectorAll('.evidence img')];return imgs.length===2&&imgs.every(i=>i.complete&&i.naturalWidth>0)}")
-        page.get_by_role("tab", name="Findings", exact=True).click()
-        page.locator(".evidence-links button").first.click()
-        assert page.get_by_role("tabpanel", name="Evidence", exact=True).is_visible()
-        page.screenshot(path="evals/reports/stack/dashboard.png", full_page=True)
-        browser.close()
+    # Test the trusted dashboard separately; never attach the untrusted capture browser to control services.
+    compose("run", "-T", "--name", "siteproof-integration-ui-proof", "--no-deps", "ui-test")
+    subprocess.run(["docker", "cp", "siteproof-integration-ui-proof:/tmp/dashboard.png", "evals/reports/stack/dashboard.png"], check=True)
+    subprocess.run(["docker", "rm", "siteproof-integration-ui-proof"], check=True, capture_output=True)
     identifier = report["samples"][0]["job_id"]
     report["database_checks"] = compose("exec", "-T", "worker", "python", "evals/db_checks.py", "integration", identifier)
     request("DELETE", f"/api/jobs/{identifier}")

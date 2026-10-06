@@ -238,76 +238,6 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
                                     "uncertainty": "Heading treated as candidate service; human approval required",
                                 }
                             )
-                if url:
-                    try:
-                        with tempfile.TemporaryDirectory() as folder:
-                            report = str(Path(folder) / "lighthouse.json")
-                            subprocess.run(
-                                [
-                                    "/opt/audit/node_modules/.bin/lighthouse",
-                                    url,
-                                    "--output=json",
-                                    "--output-path=" + report,
-                                    "--chrome-flags=--headless --no-sandbox --proxy-server=http://proxy:8080 --proxy-bypass-list=<-loopback>",
-                                    "--only-categories=performance,accessibility,best-practices,seo",
-                                    "--quiet",
-                                    *(
-                                        [
-                                            "--preset=desktop",
-                                            "--screenEmulation.mobile=false",
-                                            "--screenEmulation.width=1440",
-                                            "--screenEmulation.height=1000",
-                                            "--screenEmulation.deviceScaleFactor=1",
-                                        ]
-                                        if viewport == "desktop"
-                                        else [
-                                            "--screenEmulation.mobile=true",
-                                            "--screenEmulation.width=390",
-                                            "--screenEmulation.height=844",
-                                            "--screenEmulation.deviceScaleFactor=1",
-                                        ]
-                                    ),
-                                ],
-                                env=dict(os.environ, CHROME_PATH=executable_path or p.chromium.executable_path),
-                                timeout=45,
-                                check=True,
-                                capture_output=True,
-                            )
-                            lighthouse = json.loads(Path(report).read_text())
-                            evidence.append(
-                                {
-                                    "id": "lighthouse-" + viewport,
-                                    "kind": "lighthouse",
-                                    "viewport": viewport,
-                                    "tool_version": lighthouse.get("lighthouseVersion"),
-                                    "categories": lighthouse.get("categories"),
-                                    "audits": lighthouse.get("audits"),
-                                }
-                            )
-                    except (OSError, subprocess.SubprocessError) as exc:
-                        diagnostic = getattr(exc, "stderr", b"") or b""
-                        if isinstance(diagnostic, bytes):
-                            diagnostic = diagnostic.decode(errors="replace")
-                        evidence.append(
-                            {
-                                "id": "lighthouse-" + viewport,
-                                "kind": "unavailable",
-                                "name": "lighthouse",
-                                "viewport": viewport,
-                                "reason": "Measurement failed or timed out",
-                                "error_type": type(exc).__name__,
-                                "detail": diagnostic[-1200:],
-                            }
-                        )
-                else:
-                    evidence.append(
-                        {
-                            "id": "lighthouse-" + viewport,
-                            "kind": "unavailable",
-                            "name": "lighthouse",
-                            "reason": "HTML preview has no public URL; Lighthouse unavailable",
-                        }
-                    )
             except Exception as exc:
                 evidence.append(
                     {
@@ -320,6 +250,9 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
             finally:
                 context.close()
         browser.close()
+        # Keep only one Chromium process tree active under the fixed PID/memory limits.
+        for viewport in VIEWPORTS:
+            evidence.append(lighthouse_evidence(url, viewport, executable_path or p.chromium.executable_path, proxy))
     return {
         "evidence": evidence,
         "screenshots": screenshots,
@@ -327,3 +260,78 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
         "partial": any(e["kind"] == "unavailable" for e in evidence),
         "canonical_url": canonical_url,
     }
+
+
+def lighthouse_evidence(url, viewport, executable_path, proxy):
+    evidence = []
+    if url:
+        try:
+            with tempfile.TemporaryDirectory() as folder:
+                report = str(Path(folder) / "lighthouse.json")
+                subprocess.run(
+                    [
+                        "/opt/audit/node_modules/.bin/lighthouse",
+                        url,
+                        "--output=json",
+                        "--output-path=" + report,
+                        f"--chrome-flags=--headless --no-sandbox --disable-dev-shm-usage --proxy-server={proxy} --proxy-bypass-list=<-loopback>",
+                        "--only-categories=performance,accessibility,best-practices,seo",
+                        "--quiet",
+                        *(
+                            [
+                                "--preset=desktop",
+                                "--screenEmulation.mobile=false",
+                                "--screenEmulation.width=1440",
+                                "--screenEmulation.height=1000",
+                                "--screenEmulation.deviceScaleFactor=1",
+                            ]
+                            if viewport == "desktop"
+                            else [
+                                "--screenEmulation.mobile=true",
+                                "--screenEmulation.width=390",
+                                "--screenEmulation.height=844",
+                                "--screenEmulation.deviceScaleFactor=1",
+                            ]
+                        ),
+                    ],
+                    env=dict(os.environ, CHROME_PATH=executable_path),
+                    timeout=45,
+                    check=True,
+                    capture_output=True,
+                )
+                lighthouse = json.loads(Path(report).read_text())
+                evidence.append(
+                    {
+                        "id": "lighthouse-" + viewport,
+                        "kind": "lighthouse",
+                        "viewport": viewport,
+                        "tool_version": lighthouse.get("lighthouseVersion"),
+                        "categories": lighthouse.get("categories"),
+                        "audits": lighthouse.get("audits"),
+                    }
+                )
+        except (OSError, subprocess.SubprocessError) as exc:
+            diagnostic = getattr(exc, "stderr", b"") or b""
+            if isinstance(diagnostic, bytes):
+                diagnostic = diagnostic.decode(errors="replace")
+            evidence.append(
+                {
+                    "id": "lighthouse-" + viewport,
+                    "kind": "unavailable",
+                    "name": "lighthouse",
+                    "viewport": viewport,
+                    "reason": "Measurement failed or timed out",
+                    "error_type": type(exc).__name__,
+                    "detail": diagnostic[-1200:],
+                }
+            )
+    else:
+        evidence.append(
+            {
+                "id": "lighthouse-" + viewport,
+                "kind": "unavailable",
+                "name": "lighthouse",
+                "reason": "HTML preview has no public URL; Lighthouse unavailable",
+            }
+        )
+    return evidence[0]
