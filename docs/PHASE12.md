@@ -23,11 +23,10 @@ Scope: finish capture, deterministic audit and grounded AI/retrieval. Existing D
 
 ## Exact integration commands
 
-On an isolated disposable test checkout, copy `.env.example` to `.env`, set `SITEPROOF_TEST_FIXTURE_HTTP=true`, and set `SITEPROOF_TENANT_KEYS_JSON={"integration":"integration-key","other":"other-key"}`. Do not overwrite an existing personal `.env`.
+Copy `.env.example` to `.env` only if `.env` does not already exist. The integration override explicitly enables the fixed HTTP fixture host and provisions the two test tenants. The named `siteproof-integration` project uses separate volumes; do not overwrite an existing personal `.env`.
 
 ```sh
-docker compose --env-file .env -f infra/compose.yaml --profile integration up --build -d
-python -m playwright install --with-deps chromium
+docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration up --build -d
 python evals/stack_run.py
 ```
 

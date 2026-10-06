@@ -98,6 +98,7 @@ def main():
             compose("exec", "-T", "redis", "redis-cli", "LPUSH", "siteproof:queue", payload)
             time.sleep(6)
             assert len(request("GET", f"/api/jobs/{identifier}/runs")["items"]) == 1
+        print(json.dumps({"fixture": slug, "status": "PASS"}), flush=True)
         report["samples"].append({"slug": slug, "job_id": identifier, "evidence": len(evidence), "findings": len(findings), "facts": len(facts), "status": "PASS"})
     response = httpx.post(API + "/api/jobs", headers=dict(HEADERS, **{"Idempotency-Key": "integration-timeout-" + run_id}),
                           json={"url": "http://fixture.siteproof.test/timeout"})
@@ -109,9 +110,12 @@ def main():
     timeout_evidence = request("GET", f"/api/jobs/{timeout_job}/evidence")["items"]
     assert any(e["kind"] == "unavailable" and e["name"] == "capture" for e in timeout_evidence)
     report["timeout"] = {"job_id": timeout_job, "partial": True, "status": "PASS"}
+    Path("evals/reports/stack/partial.json").write_text(json.dumps(report, indent=2))
     # Test the trusted dashboard separately; never attach the untrusted capture browser to control services.
     compose("run", "-T", "--name", "siteproof-integration-ui-proof", "--no-deps", "ui-test")
     subprocess.run(["docker", "cp", "siteproof-integration-ui-proof:/tmp/dashboard.png", "evals/reports/stack/dashboard.png"], check=True)
+    subprocess.run(["docker", "cp", "siteproof-integration-ui-proof:/tmp/ui-result.json", "evals/reports/stack/ui-result.json"], check=True)
+    report["ui"] = json.loads(Path("evals/reports/stack/ui-result.json").read_text())
     subprocess.run(["docker", "rm", "siteproof-integration-ui-proof"], check=True, capture_output=True)
     identifier = report["samples"][0]["job_id"]
     report["database_checks"] = compose("exec", "-T", "worker", "python", "evals/db_checks.py", "integration", identifier)
