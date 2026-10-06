@@ -3,6 +3,7 @@
 import base64
 import json
 import os
+import signal
 import subprocess
 import tempfile
 from datetime import UTC, datetime
@@ -250,9 +251,10 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
             finally:
                 context.close()
         browser.close()
-        # Keep only one Chromium process tree active under the fixed PID/memory limits.
-        for viewport in VIEWPORTS:
-            evidence.append(lighthouse_evidence(url, viewport, executable_path or p.chromium.executable_path, proxy))
+        chrome_path = executable_path or p.chromium.executable_path
+    # Stop the Playwright driver too: its threads count against the same fixed PID limit.
+    for viewport in VIEWPORTS:
+        evidence.append(lighthouse_evidence(url, viewport, chrome_path, proxy))
     return {
         "evidence": evidence,
         "screenshots": screenshots,
@@ -268,38 +270,45 @@ def lighthouse_evidence(url, viewport, executable_path, proxy):
         try:
             with tempfile.TemporaryDirectory() as folder:
                 report = str(Path(folder) / "lighthouse.json")
-                subprocess.run(
-                    [
-                        "/opt/audit/node_modules/.bin/lighthouse",
-                        url,
-                        "--output=json",
-                        "--output-path=" + report,
-                        f"--chrome-flags=--headless --no-sandbox --disable-dev-shm-usage --proxy-server={proxy} --proxy-bypass-list=<-loopback>",
-                        "--only-categories=performance,accessibility,best-practices,seo",
-                        "--quiet",
-                        *(
+                profile = str(Path(folder) / "chrome-profile")
+                try:
+                    subprocess.run(
                             [
-                                "--preset=desktop",
-                                "--screenEmulation.mobile=false",
-                                "--screenEmulation.width=1440",
-                                "--screenEmulation.height=1000",
-                                "--screenEmulation.deviceScaleFactor=1",
-                            ]
-                            if viewport == "desktop"
-                            else [
-                                "--screenEmulation.mobile=true",
-                                "--screenEmulation.width=390",
-                                "--screenEmulation.height=844",
-                                "--screenEmulation.deviceScaleFactor=1",
-                            ]
-                        ),
-                    ],
-                    env=dict(os.environ, CHROME_PATH=executable_path),
-                    timeout=45,
-                    check=True,
-                    capture_output=True,
-                )
+                            "/opt/audit/node_modules/.bin/lighthouse",
+                            url,
+                            "--output=json",
+                            "--output-path=" + report,
+                            f"--chrome-flags=--headless --no-sandbox --disable-dev-shm-usage --user-data-dir={profile} --proxy-server={proxy} --proxy-bypass-list=<-loopback>",
+                            "--only-categories=performance,accessibility,best-practices,seo",
+                            "--quiet",
+                            *(
+                                [
+                                    "--preset=desktop",
+                                    "--screenEmulation.mobile=false",
+                                    "--screenEmulation.width=1440",
+                                    "--screenEmulation.height=1000",
+                                    "--screenEmulation.deviceScaleFactor=1",
+                                ]
+                                if viewport == "desktop"
+                                else [
+                                    "--screenEmulation.mobile=true",
+                                    "--screenEmulation.width=390",
+                                    "--screenEmulation.height=844",
+                                    "--screenEmulation.deviceScaleFactor=1",
+                                ]
+                            ),
+                        ],
+                        env=dict(os.environ, CHROME_PATH=executable_path),
+                        timeout=45,
+                        check=True,
+                        capture_output=True,
+                        start_new_session=True,
+                    )
+                finally:
+                    cleanup_chrome_profile(profile)
                 lighthouse = json.loads(Path(report).read_text())
+                if lighthouse.get("runtimeError"):
+                    raise ValueError("Lighthouse runtime error: " + str(lighthouse["runtimeError"])[:500])
                 evidence.append(
                     {
                         "id": "lighthouse-" + viewport,
@@ -310,7 +319,7 @@ def lighthouse_evidence(url, viewport, executable_path, proxy):
                         "audits": lighthouse.get("audits"),
                     }
                 )
-        except (OSError, subprocess.SubprocessError) as exc:
+        except (OSError, subprocess.SubprocessError, ValueError) as exc:
             diagnostic = getattr(exc, "stderr", b"") or b""
             if isinstance(diagnostic, bytes):
                 diagnostic = diagnostic.decode(errors="replace")
@@ -322,7 +331,8 @@ def lighthouse_evidence(url, viewport, executable_path, proxy):
                     "viewport": viewport,
                     "reason": "Measurement failed or timed out",
                     "error_type": type(exc).__name__,
-                    "detail": diagnostic[-1200:],
+                    "return_code": getattr(exc, "returncode", None),
+                    "detail": diagnostic[-1200:] or str(exc)[:500],
                 }
             )
     else:
@@ -335,3 +345,19 @@ def lighthouse_evidence(url, viewport, executable_path, proxy):
             }
         )
     return evidence[0]
+
+
+def cleanup_chrome_profile(profile):
+    """Stop only Chromium processes bearing this operation's unique profile marker."""
+    proc = Path("/proc")
+    if not proc.exists():
+        return
+    marker = ("--user-data-dir=" + profile).encode()
+    for entry in proc.iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            if marker in (entry / "cmdline").read_bytes().split(b"\0"):
+                os.kill(int(entry.name), signal.SIGKILL)
+        except (OSError, ProcessLookupError):
+            pass
