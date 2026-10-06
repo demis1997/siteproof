@@ -1,0 +1,66 @@
+{
+  "generated_at": "2026-10-06T13:18:42.737626+00:00",
+  "query_count": 4,
+  "corpus_size": 4,
+  "corpus_version": "guidance-v1",
+  "embedding_model": null,
+  "embedding_dimensions": null,
+  "metrics": {
+    "keyword": {
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    "vector": null,
+    "hybrid": null
+  },
+  "observations": [
+    {
+      "query_id": "labels",
+      "strategy": "keyword",
+      "source_ids": [
+        "integration:wai-labels-v1-chunk"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "query_id": "responsive",
+      "strategy": "keyword",
+      "source_ids": [
+        "integration:webdev-layout-v1-chunk"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "query_id": "facts",
+      "strategy": "keyword",
+      "source_ids": [
+        "integration:local-contact-v1-chunk"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "query_id": "uncertainty",
+      "strategy": "keyword",
+      "source_ids": [
+        "integration:local-verification-v1-chunk",
+        "integration:wai-labels-v1-chunk"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0
+    }
+  ],
+  "live_embedding_runs": [],
+  "limitations": [
+    "Four engineer-reviewed authored relevance labels; no independent reviewer or held-out split.",
+    "Small corpus does not establish generalization or hybrid superiority.",
+    "Vector and hybrid arms BLOCKED without credentials and prices."
+  ]
+}

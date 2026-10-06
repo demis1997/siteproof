@@ -1,0 +1,60 @@
+{
+  "run_id": "c92e405e-b1d2-4083-b9e8-37767faeed9c",
+  "mode": "fixture",
+  "samples": [
+    {
+      "slug": "clean",
+      "job_id": "d008ac31-4309-4d86-a8c9-a8d16f37ddaf",
+      "evidence": 20,
+      "findings": 0,
+      "facts": 6,
+      "status": "PASS"
+    },
+    {
+      "slug": "overflow",
+      "job_id": "e60798da-e59e-44f4-9c65-d57bac51664e",
+      "evidence": 20,
+      "findings": 1,
+      "facts": 6,
+      "status": "PASS"
+    },
+    {
+      "slug": "broken-contact",
+      "job_id": "1d1e569c-2359-4595-96e2-9947b29f11a2",
+      "evidence": 20,
+      "findings": 2,
+      "facts": 6,
+      "status": "PASS"
+    },
+    {
+      "slug": "missing-labels",
+      "job_id": "3bb42d9f-6001-4fad-a7aa-4198cb383ea5",
+      "evidence": 22,
+      "findings": 6,
+      "facts": 6,
+      "status": "PASS"
+    },
+    {
+      "slug": "conflicting-facts",
+      "job_id": "18f372d0-9d3f-41e6-baa9-ff45ae9a043d",
+      "evidence": 20,
+      "findings": 0,
+      "facts": 8,
+      "status": "PASS"
+    },
+    {
+      "slug": "prompt-injection",
+      "job_id": "4ced3949-da05-4e2a-8958-4a5e01b9af26",
+      "evidence": 20,
+      "findings": 0,
+      "facts": 6,
+      "status": "PASS"
+    }
+  ],
+  "live_audit": "UNVERIFIED: credentials not configured",
+  "timeout": {
+    "job_id": "971ef753-4257-4a9f-8b40-d4d240da3ed7",
+    "partial": true,
+    "status": "PASS"
+  }
+}

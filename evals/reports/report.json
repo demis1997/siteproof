@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-06T11:38:45.947331+00:00",
+  "generated_at": "2026-10-06T12:25:40.393541+00:00",
   "version": "contract-eval-v1",
   "python": "3.12.11",
   "sample_size": 9,
@@ -29,8 +29,8 @@
     "complete_checks_contract_acceptance": true,
     "hypothesis_remains_unverified": true,
     "contact_fact_mutation_rejection": true,
-    "p50_contract_latency_seconds": 0.0001483329979237169,
-    "p95_contract_latency_seconds": 0.00027308298740535975,
+    "p50_contract_latency_seconds": 0.00019358398276381195,
+    "p95_contract_latency_seconds": 0.0008387500129174441,
     "retrieval_recall_at_k": null,
     "targeted_browser_repair_success": null,
     "new_browser_regression_rate": null,
@@ -60,7 +60,7 @@
       ],
       "finding_ids": [],
       "expected_source_categories": [],
-      "latency_seconds": 0.00027308298740535975
+      "latency_seconds": 0.0004399590252432972
     },
     {
       "fixture": "overflow",
@@ -84,7 +84,7 @@
       ],
       "finding_ids": [],
       "expected_source_categories": [],
-      "latency_seconds": 0.00015499998698942363
+      "latency_seconds": 0.00037237501237541437
     },
     {
       "fixture": "broken_contact",
@@ -112,7 +112,7 @@
       "expected_source_categories": [
         "contact_links"
       ],
-      "latency_seconds": 0.00017329200636595488
+      "latency_seconds": 0.0008387500129174441
     },
     {
       "fixture": "missing_labels",
@@ -140,7 +140,7 @@
       "expected_source_categories": [
         "accessible_labels"
       ],
-      "latency_seconds": 0.00015716601046733558
+      "latency_seconds": 0.000222250004298985
     },
     {
       "fixture": "weak_navigation",
@@ -164,7 +164,7 @@
       ],
       "finding_ids": [],
       "expected_source_categories": [],
-      "latency_seconds": 0.0001483329979237169
+      "latency_seconds": 0.00018870801432058215
     },
     {
       "fixture": "conflicting_facts",
@@ -188,7 +188,7 @@
       ],
       "finding_ids": [],
       "expected_source_categories": [],
-      "latency_seconds": 0.0001452919968869537
+      "latency_seconds": 0.00019358398276381195
     },
     {
       "fixture": "prompt_injection",
@@ -212,7 +212,7 @@
       ],
       "finding_ids": [],
       "expected_source_categories": [],
-      "latency_seconds": 0.00014820799697190523
+      "latency_seconds": 0.00018291600281372666
     },
     {
       "fixture": "partial_capture",
@@ -236,7 +236,7 @@
       ],
       "finding_ids": [],
       "expected_source_categories": [],
-      "latency_seconds": 0.00014700001338496804
+      "latency_seconds": 0.00017662500613369048
     },
     {
       "fixture": "timeout",
@@ -260,7 +260,7 @@
       ],
       "finding_ids": [],
       "expected_source_categories": [],
-      "latency_seconds": 0.0001442090142518282
+      "latency_seconds": 0.00017479099915362895
     }
   ],
   "limitations": [

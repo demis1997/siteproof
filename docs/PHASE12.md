@@ -7,17 +7,21 @@ Scope: finish capture, deterministic audit and grounded AI/retrieval. Existing D
 - Local unit/contract tests, frontend lint/types/build, renderer authorization and escaping.
 - GitHub run 37459673262 passed backend, frontend and isolated browser slice. The browser slice is not a full-stack job submission test.
 
-## Implemented; integration verification in progress
+## Verified locally against real services — 6 October 2026
 
 - Real PostgreSQL/pgvector, Redis, MinIO, API, single-host worker and frontend Compose integration job.
 - HTTP fixture capture through a fixed test-only proxy mapping; real axe/Lighthouse and screenshots.
 - LangGraph PostgreSQL checkpoints plus durable Auditor substep journal. Persisted successful results are reused; uncertain paid calls stop for review. Explicit provider 429 rejections are retryable; unknown transport outcomes are not automatically replayed.
 - Persisted fact corrections, tenant-scoped artifacts and deletion.
-- PostgreSQL FTS/vector/RRF mechanics assertions and credentialed ranking evaluator.
+- Actual PostgreSQL FTS/vector/RRF mechanics assertions, checkpoint persistence, cached-success replay guard, uncertain paid-call review guard, and tenant/model filtering passed. Synthetic vectors verify mechanics only.
+- Combined `evals/stack_run.py` passed six standard fixture audits, a real timeout/partial-capture job, and an additional UI-submitted overflow job. Authenticated screenshots loaded in the browser and evidence navigation passed. Physical PostgreSQL/checkpoint/MinIO deletion passed for the harness-owned clean job.
+- Actual finding/fact approval passed; corrected email persisted across API/worker restart.
+- Keyword retrieval: recall@1=1.0, recall@3=1.0, MRR=1.0 on four authored queries/four documents (`guidance-v1`). Vector/hybrid relevance remains blocked.
+- GitHub [run 37468331014](https://github.com/demis1997/siteproof/actions/runs/37468331014) passed all four jobs, including real-stack integration (`bd661ca`).
+- 78 Python tests, Ruff, web lint/types/production build and four renderer tests passed. Current code verification commit: `983658c`. Earlier failed runs remain failures; this is one successful local combined run, not a reliability estimate.
 
 ## Blocked or unavailable
 
-- Local Docker Engine is unavailable; Docker.app launcher returns NSOSStatusError -10827 (missing executable). No local volumes were deleted.
 - Live model credentials and three configured prices are missing. No real vision/text/embedding audit or semantic retrieval comparison has been run.
 - Optional reranking remains unverified; Langfuse remains optional and absent.
 
@@ -48,6 +52,7 @@ Configure these in the private `.env` file (never paste keys into chat):
 - `SITEPROOF_MODEL_KEY`
 - `SITEPROOF_MODEL_URL`, `SITEPROOF_MODEL_ID`
 - `SITEPROOF_EMBEDDING_MODEL` (1536-dimensional support required)
+- `SITEPROOF_EMBEDDING_VERSION` (change when embedding behavior/version changes)
 - `SITEPROOF_INPUT_COST_PER_MILLION`
 - `SITEPROOF_OUTPUT_COST_PER_MILLION`
 - `SITEPROOF_EMBEDDING_COST_PER_MILLION`

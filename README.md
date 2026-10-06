@@ -9,7 +9,7 @@ This repository implements a single-host vertical slice, with explicit determini
 Requires Docker Engine with Compose, network access for image/dependency downloads, and approximately 4 GB available RAM. Run from this project folder:
 
 ```sh
-cp .env.example .env
+test -f .env || cp .env.example .env
 docker compose --env-file .env -f infra/compose.yaml up --build -d
 docker compose --env-file .env -f infra/compose.yaml logs -f api worker browser web
 ```
@@ -54,11 +54,11 @@ DOM selectors, actual axe violations, viewport checks and Lighthouse results ret
 
 Lighthouse is currently unavailable for inline private previews; this limitation is reported, not assigned a fake score. Automated testing does not establish WCAG compliance. Link checks cover homepage fragment targets only; other pages are outside this job's scope. No load testing, real-client conversion experiment, or independent human design study has been performed.
 
-See [API](docs/API.md), [security boundaries](docs/SECURITY.md), [deployment](docs/DEPLOYMENT.md), [baseline limitations](docs/BASELINES.md), and [demo/resume templates](docs/DEMO.md). Actual measured static-fixture results are in [the contract report](evals/reports/report.md); browser execution limitations are in [the browser failure report](evals/reports/browser/failure.md).
+See [API](docs/API.md), [security boundaries](docs/SECURITY.md), [deployment](docs/DEPLOYMENT.md), [baseline limitations](docs/BASELINES.md), and [demo/resume templates](docs/DEMO.md). Actual measured static-fixture results are in [the contract report](evals/reports/report.md). The historical host-browser failure report records an earlier sandbox limitation; subsequent real Docker capture and UI checks are tracked in [Phase 1–2 validation](docs/PHASE12.md).
 
 ## Verification in this development session
 
-The final observed check results and remaining integration requirements are recorded in `docs/VALIDATION.md`. Docker startup, live model requests, real PostgreSQL/Redis/MinIO integration and browser end-to-end behavior must not be inferred from unit/contract test success.
+The final observed check results and remaining integration requirements are recorded in `docs/VALIDATION.md`. Real Docker services and browser checks are exercised separately from unit tests. Live model requests remain unverified without credentials and configured prices.
 
 ## Phase 1–2 integration milestone
 
