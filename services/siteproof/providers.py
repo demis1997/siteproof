@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 import re
+import struct
 import time
 from typing import Protocol
 
@@ -39,6 +40,19 @@ def strict_schema(schema):
 
     visit(schema)
     return schema
+
+
+def vision_reserve(png):
+    """Conservative documented GPT-4.1-mini patch upper bound; other models use operator allowance."""
+    if len(png) < 24 or png[12:16] != b"IHDR":
+        raise ValueError("Vision capture has no valid PNG dimensions")
+    width, height = struct.unpack(">II", png[16:24])
+    if not width or not height:
+        raise ValueError("Vision capture has invalid PNG dimensions")
+    if settings.model_id.startswith("gpt-4.1-mini"):
+        patches = min(math.ceil(width / 32) * math.ceil(height / 32), 6144)
+        return max(settings.vision_token_allowance, math.ceil(patches * 1.62) + 256)
+    return settings.vision_token_allowance
 
 
 class Provider(Protocol):
@@ -200,15 +214,17 @@ class LiveProvider:
         payload = json.dumps({"evidence": compact, "guidance": guidance}, ensure_ascii=True)
         chosen_images = (images or [])[:2]
         image_records = []
+        image_reserve = 0
         for shot in chosen_images:
             decoded = base64.b64decode(shot["png"], validate=True)
             if not decoded.startswith(b"\x89PNG\r\n\x1a\n"):
                 raise ValueError("Vision input is not a PNG capture")
+            image_reserve += vision_reserve(decoded)
             image_records.append(
                 {"id": shot["id"], "sha256": hashlib.sha256(decoded).hexdigest(), "bytes": len(decoded)}
             )
         # Configurable conservative allowance; provider/model changes require recalibration against actual usage.
-        input_upper = len((prompt + payload).encode()) + 256 + len(chosen_images) * settings.vision_token_allowance
+        input_upper = len((prompt + payload).encode()) + 256 + image_reserve
         output_limit = min(settings.model_output_limit, budget.max_tokens - budget.tokens - input_upper)
         if output_limit < 256:
             raise ValueError("Evidence exceeds the bounded model context; human review required")
@@ -290,6 +306,7 @@ class LiveProvider:
             "duration_ms": round((time.monotonic() - started) * 1000),
             "prompt_version": "auditor-v2",
             "images_sent": image_records,
+            "vision_reserved_tokens": image_reserve,
             "provider_request_id": response.headers.get("x-request-id") if hasattr(response, "headers") else None,
             "guidance_ids": sorted(guidance_ids),
             "response_model": data.get("model"),

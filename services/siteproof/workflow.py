@@ -153,9 +153,10 @@ def auditor(state):
             state["evidence"], guidance, images=capture["screenshots"], budget=budget
         )
         budget.consume(tokens=run["tokens"], cost=run["cost"])
-        return {"findings": findings, "run": run, "budget": budget.model_dump()}
+        return {"findings": findings, "run": run, "guidance": guidance, "budget": budget.model_dump()}
 
     diagnosed = once(state["tenant"], state["job_id"], "findings-v2", diagnose, paid=settings.mode == "live")
+    guidance = diagnosed.get("guidance", guidance)
     findings, run = diagnosed["findings"], diagnosed["run"]
     run = dict(
         run,

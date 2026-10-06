@@ -19,7 +19,7 @@ The verified fixture milestone is preserved. This milestone cannot certify live 
 
 A provider can support Chat Completions while using different embedding authorization. Verify each with the operator-configured credentials. Model/version/1536 dimensions and endpoint fingerprint must match indexing and queries. Optional reranking is disabled in the benchmark.
 
-Official contracts: [vision](https://developers.openai.com/api/docs/guides/images-vision), [selected model](https://developers.openai.com/api/docs/models/gpt-4.1-mini), [embeddings](https://developers.openai.com/api/reference/resources/embeddings/methods/create). These docs establish request shapes and model modalities, not this account's access. Conservative vision token allowances remain configurable and require calibration against actual usage; monetary figures are configured estimates, not invoices.
+Official contracts: [vision](https://developers.openai.com/api/docs/guides/images-vision), [selected model](https://developers.openai.com/api/docs/models/gpt-4.1-mini), [embeddings](https://developers.openai.com/api/reference/resources/embeddings/methods/create). These docs establish request shapes and model modalities, not this account's access. GPT-4.1-mini preflight reserves a conservative PNG-dimension/32px-patch upper bound with the documented 1.62 multiplier and safety margin, never below the configured allowance. Other models use the configurable allowance and require calibration against actual usage; monetary figures are configured estimates, not invoices.
 
 ## Start real services
 

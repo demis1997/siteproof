@@ -270,3 +270,12 @@ def test_model_cannot_invent_a_score_or_unattributed_guidance(setup, monkeypatch
     raw["guidance_ids"] = []
     with pytest.raises(ValueError, match="guidance references"):
         LiveProvider().findings([{"id": "dom", "kind": "dom"}], [{"id": "source"}], budget=Budget(max_cost=None))
+
+
+def test_large_vision_capture_reserves_more_than_fixed_allowance(setup):
+    import struct
+    from siteproof.providers import vision_reserve
+
+    header = b"\x89PNG\r\n\x1a\n" + b"\x00\x00\x00\rIHDR" + struct.pack(">II", 1440, 6000)
+    assert vision_reserve(header) > settings.vision_token_allowance
+    assert vision_reserve(header) <= math.ceil(6144 * 1.62) + 256
