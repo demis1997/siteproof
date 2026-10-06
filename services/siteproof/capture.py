@@ -278,7 +278,7 @@ def lighthouse_evidence(url, viewport, executable_path, proxy):
                             url,
                             "--output=json",
                             "--output-path=" + report,
-                            f"--chrome-flags=--headless --no-sandbox --disable-dev-shm-usage --user-data-dir={profile} --proxy-server={proxy} --proxy-bypass-list=<-loopback>",
+                            f"--chrome-flags=--headless --no-sandbox --disable-dev-shm-usage --renderer-process-limit=2 --user-data-dir={profile} --proxy-server={proxy} --proxy-bypass-list=<-loopback>",
                             "--only-categories=performance,accessibility,best-practices,seo",
                             "--quiet",
                             *(
@@ -298,7 +298,7 @@ def lighthouse_evidence(url, viewport, executable_path, proxy):
                                 ]
                             ),
                         ],
-                        env=dict(os.environ, CHROME_PATH=executable_path),
+                        env=dict(os.environ, CHROME_PATH=executable_path, NODE_OPTIONS="--v8-pool-size=1", UV_THREADPOOL_SIZE="1"),
                         timeout=45,
                         check=True,
                         capture_output=True,
