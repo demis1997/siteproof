@@ -306,3 +306,16 @@ def test_live_fact_review_requires_exact_value_or_recorded_correction():
     ]
     assert facts_preserved(original, changed, [{"id": "dom"}])
     assert not facts_preserved(original, changed, [])
+
+
+def test_elapsed_provider_calls_share_time_budget(setup, monkeypatch):
+    from siteproof import providers
+
+    clock = {"now": 0.0}
+    monkeypatch.setattr(providers.time, "monotonic", lambda: clock["now"])
+    model = LiveProvider()
+    budget = Budget(max_cost=None, max_seconds=5)
+    model._reserve(100, 0, budget)
+    clock["now"] = 6
+    with pytest.raises(ValueError, match="Time budget"):
+        model._reserve(100, 0, budget)

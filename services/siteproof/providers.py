@@ -90,11 +90,16 @@ class LiveProvider:
             raise ValueError("Embeddings require SITEPROOF_EMBEDDING_KEY or explicit credential sharing")
         if settings.require_known_prices and not settings.prices_known():
             raise ValueError("Configured monetary policy requires known prices")
+        self._started = time.monotonic()
+        self._initial_elapsed = None
         self.last_embedding_run = None
         self.embedding_runs = []
 
     def _reserve(self, input_upper, output_limit, budget, embedding=False):
         budget = budget or Budget(max_cost=None if not settings.prices_known() else 1)
+        if self._initial_elapsed is None:
+            self._initial_elapsed = budget.elapsed_seconds
+        budget.elapsed_seconds = max(budget.elapsed_seconds, self._initial_elapsed + time.monotonic() - self._started)
         if budget.tokens + input_upper + output_limit > budget.max_tokens:
             raise ValueError("Token budget cannot cover the bounded model request")
         if budget.tool_calls >= budget.max_tool_calls:
@@ -125,10 +130,11 @@ class LiveProvider:
             raise ValueError(
                 "Embeddings require SITEPROOF_EMBEDDING_KEY or SITEPROOF_EMBEDDING_USE_MODEL_CREDENTIALS=true"
             )
+        budget = budget or Budget(max_cost=None if not settings.prices_known() else 1)
         started = time.monotonic()
         upper = sum(len(t.encode("utf-8")) for t in texts) + 128
         self._reserve(upper, 0, budget, embedding=True)
-        with httpx.Client(timeout=30) as client:
+        with httpx.Client(timeout=max(0.001, min(30, budget.max_seconds - budget.elapsed_seconds))) as client:
             response = client.post(
                 settings.embedding_endpoint() + "/embeddings",
                 headers={"Authorization": "Bearer " + settings.embedding_credential()},
@@ -233,7 +239,7 @@ class LiveProvider:
             {"type": "image_url", "image_url": {"url": "data:image/png;base64," + shot["png"], "detail": "low"}}
             for shot in chosen_images
         ]
-        with httpx.Client(timeout=60) as client:
+        with httpx.Client(timeout=max(0.001, min(60, budget.max_seconds - budget.elapsed_seconds))) as client:
             response = client.post(
                 settings.model_url + "/chat/completions",
                 headers={"Authorization": "Bearer " + settings.model_key},
@@ -339,7 +345,7 @@ class LiveProvider:
             "required": ["kind", "value", "href"],
             "additionalProperties": False,
         }
-        with httpx.Client(timeout=60) as client:
+        with httpx.Client(timeout=max(0.001, min(60, budget.max_seconds - budget.elapsed_seconds))) as client:
             response = client.post(
                 settings.model_url + "/chat/completions",
                 headers={"Authorization": "Bearer " + settings.model_key},
