@@ -37,10 +37,10 @@ def test_live_redirect_and_subrequest_destinations_blocked(monkeypatch, url):
         validate_url(url)
 
 
-@pytest.mark.parametrize("code", ["insufficient_quota", "rate_limit_exceeded", "invalid_api_key", "secret-code"])
+@pytest.mark.parametrize("code", ["insufficient_quota", "rate_limit_exceeded", "invalid_api_key", "secret-code", []])
 def test_safe_provider_error_classification(code):
     response = httpx.Response(429, json={"error": {"code": code, "message": "SECRET API KEY CONTENT"}})
     report = provider_error_report(response)
     assert "SECRET" not in str(report)
-    assert report["error_code"] == (None if code == "secret-code" else code)
+    assert report["error_code"] == (None if code in ("secret-code", []) else code)
     assert report["automatic_retry"] is False

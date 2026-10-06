@@ -7,7 +7,7 @@
   "new_provider_requests": 0,
   "automatic_retries": 0,
   "cost_usd": null,
-  "backend_tests_passed": 127,
+  "backend_tests_passed": 128,
   "lint": "PASS",
   "controlled_fixture_capture": "PASS",
   "live_audits_submitted": 0,

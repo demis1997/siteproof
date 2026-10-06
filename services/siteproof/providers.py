@@ -23,6 +23,8 @@ def provider_error_report(response):
         code = response.json().get("error", {}).get("code")
     except (ValueError, AttributeError):
         code = None
+    if not isinstance(code, str):
+        code = None
     meanings = {
         "insufficient_quota": (
             "Provider reports insufficient quota or billing allowance.",
