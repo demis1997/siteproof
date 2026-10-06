@@ -1,0 +1,89 @@
+name: SiteProof checks
+on:
+  push:
+  pull_request:
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Python dependencies
+        run: pip install -r requirements.lock
+      - name: Lint
+        run: ruff check services evals
+      - name: Tests
+        run: pytest
+      - name: Deterministic contract evaluation
+        run: |
+          python evals/run.py
+          python evals/retrieval_run.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: observed-evaluation
+          path: evals/reports
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run test:renderer
+  browser-slice:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: pip install -r requirements.lock
+      - run: python -m playwright install --with-deps chromium
+      - run: npm ci --prefix infra
+      - run: npm ci --prefix apps/web
+      - run: npm run build --prefix apps/web
+      - name: Start controlled renderer
+        env:
+          SITEPROOF_RENDER_KEY: local-render-key
+        run: |
+          npm run start --prefix apps/web > /tmp/siteproof-web.log 2>&1 &
+          python - <<'PY'
+          import time
+          import urllib.request
+          for attempt in range(60):
+              try:
+                  urllib.request.urlopen('http://127.0.0.1:3000', timeout=1)
+                  break
+              except OSError:
+                  time.sleep(1)
+          else:
+              raise RuntimeError('Web renderer did not start')
+          PY
+      - name: Actual browser fixture slice
+        run: |
+          python - <<'PY'
+          import subprocess
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as p:
+              executable = p.chromium.executable_path
+          subprocess.run(['python', 'evals/browser_run.py', '--chrome', executable], check=True)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-observations
+          path: evals/reports/browser

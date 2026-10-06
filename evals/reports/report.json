@@ -1,0 +1,272 @@
+{
+  "generated_at": "2026-10-06T11:38:45.947331+00:00",
+  "version": "contract-eval-v1",
+  "python": "3.12.11",
+  "sample_size": 9,
+  "scope": "Static HTML contact/label extraction and actual deterministic auditor/verification contracts; not browser or model quality.",
+  "comparisons": {
+    "A_single_prompt": {
+      "status": "not_run",
+      "reason": "Requires configured live model and controlled prompt experiment"
+    },
+    "B_rag_auditor": {
+      "status": "not_run",
+      "reason": "Requires database retrieval and configured live model"
+    },
+    "C_full_workflow": {
+      "status": "not_run",
+      "reason": "This harness evaluates contracts only; separate E2E/browser test required"
+    }
+  },
+  "metrics": {
+    "source_finding_precision": 1.0,
+    "source_finding_recall": 1.0,
+    "evidence_support_rate": 1.0,
+    "source_finding_count": 2,
+    "regression_rejection": true,
+    "missing_checks_rejection": true,
+    "missing_rendered_fact_evidence_rejection": true,
+    "complete_checks_contract_acceptance": true,
+    "hypothesis_remains_unverified": true,
+    "contact_fact_mutation_rejection": true,
+    "p50_contract_latency_seconds": 0.0001483329979237169,
+    "p95_contract_latency_seconds": 0.00027308298740535975,
+    "retrieval_recall_at_k": null,
+    "targeted_browser_repair_success": null,
+    "new_browser_regression_rate": null,
+    "workflow_recovery_rate": null,
+    "cost_per_accepted_preview": null
+  },
+  "rows": [
+    {
+      "fixture": "clean",
+      "observed_checks": [
+        {
+          "id": "clean-contact_links",
+          "kind": "check",
+          "name": "contact_links",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML contact_links check"
+        },
+        {
+          "id": "clean-accessible_labels",
+          "kind": "check",
+          "name": "accessible_labels",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML accessible_labels check"
+        }
+      ],
+      "finding_ids": [],
+      "expected_source_categories": [],
+      "latency_seconds": 0.00027308298740535975
+    },
+    {
+      "fixture": "overflow",
+      "observed_checks": [
+        {
+          "id": "overflow-contact_links",
+          "kind": "check",
+          "name": "contact_links",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML contact_links check"
+        },
+        {
+          "id": "overflow-accessible_labels",
+          "kind": "check",
+          "name": "accessible_labels",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML accessible_labels check"
+        }
+      ],
+      "finding_ids": [],
+      "expected_source_categories": [],
+      "latency_seconds": 0.00015499998698942363
+    },
+    {
+      "fixture": "broken_contact",
+      "observed_checks": [
+        {
+          "id": "broken_contact-contact_links",
+          "kind": "check",
+          "name": "contact_links",
+          "passed": false,
+          "viewport": "source",
+          "description": "Static HTML contact_links check"
+        },
+        {
+          "id": "broken_contact-accessible_labels",
+          "kind": "check",
+          "name": "accessible_labels",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML accessible_labels check"
+        }
+      ],
+      "finding_ids": [
+        "finding-broken_contact-contact_links"
+      ],
+      "expected_source_categories": [
+        "contact_links"
+      ],
+      "latency_seconds": 0.00017329200636595488
+    },
+    {
+      "fixture": "missing_labels",
+      "observed_checks": [
+        {
+          "id": "missing_labels-contact_links",
+          "kind": "check",
+          "name": "contact_links",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML contact_links check"
+        },
+        {
+          "id": "missing_labels-accessible_labels",
+          "kind": "check",
+          "name": "accessible_labels",
+          "passed": false,
+          "viewport": "source",
+          "description": "Static HTML accessible_labels check"
+        }
+      ],
+      "finding_ids": [
+        "finding-missing_labels-accessible_labels"
+      ],
+      "expected_source_categories": [
+        "accessible_labels"
+      ],
+      "latency_seconds": 0.00015716601046733558
+    },
+    {
+      "fixture": "weak_navigation",
+      "observed_checks": [
+        {
+          "id": "weak_navigation-contact_links",
+          "kind": "check",
+          "name": "contact_links",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML contact_links check"
+        },
+        {
+          "id": "weak_navigation-accessible_labels",
+          "kind": "check",
+          "name": "accessible_labels",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML accessible_labels check"
+        }
+      ],
+      "finding_ids": [],
+      "expected_source_categories": [],
+      "latency_seconds": 0.0001483329979237169
+    },
+    {
+      "fixture": "conflicting_facts",
+      "observed_checks": [
+        {
+          "id": "conflicting_facts-contact_links",
+          "kind": "check",
+          "name": "contact_links",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML contact_links check"
+        },
+        {
+          "id": "conflicting_facts-accessible_labels",
+          "kind": "check",
+          "name": "accessible_labels",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML accessible_labels check"
+        }
+      ],
+      "finding_ids": [],
+      "expected_source_categories": [],
+      "latency_seconds": 0.0001452919968869537
+    },
+    {
+      "fixture": "prompt_injection",
+      "observed_checks": [
+        {
+          "id": "prompt_injection-contact_links",
+          "kind": "check",
+          "name": "contact_links",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML contact_links check"
+        },
+        {
+          "id": "prompt_injection-accessible_labels",
+          "kind": "check",
+          "name": "accessible_labels",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML accessible_labels check"
+        }
+      ],
+      "finding_ids": [],
+      "expected_source_categories": [],
+      "latency_seconds": 0.00014820799697190523
+    },
+    {
+      "fixture": "partial_capture",
+      "observed_checks": [
+        {
+          "id": "partial_capture-contact_links",
+          "kind": "check",
+          "name": "contact_links",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML contact_links check"
+        },
+        {
+          "id": "partial_capture-accessible_labels",
+          "kind": "check",
+          "name": "accessible_labels",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML accessible_labels check"
+        }
+      ],
+      "finding_ids": [],
+      "expected_source_categories": [],
+      "latency_seconds": 0.00014700001338496804
+    },
+    {
+      "fixture": "timeout",
+      "observed_checks": [
+        {
+          "id": "timeout-contact_links",
+          "kind": "check",
+          "name": "contact_links",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML contact_links check"
+        },
+        {
+          "id": "timeout-accessible_labels",
+          "kind": "check",
+          "name": "accessible_labels",
+          "passed": true,
+          "viewport": "source",
+          "description": "Static HTML accessible_labels check"
+        }
+      ],
+      "finding_ids": [],
+      "expected_source_categories": [],
+      "latency_seconds": 0.0001442090142518282
+    }
+  ],
+  "limitations": [
+    "Labels are source-inspected, not independently browser/human verified.",
+    "Nine related variants from one synthetic business; no client generalization.",
+    "Overflow, geometry, navigation semantics, timeout and partial capture need browser tests.",
+    "A/B/C quality comparison, embeddings, live providers and actual accepted-preview cost were not measured."
+  ]
+}

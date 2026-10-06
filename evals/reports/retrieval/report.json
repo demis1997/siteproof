@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-10-06T11:38:46.116743+00:00",
+  "version": "local-retrieval-v1",
+  "sample_size": 4,
+  "scope": "Real small guidance corpus, local token-overlap title/body ranks, actual application RRF; independent of auditor.",
+  "metrics": {
+    "local_lexical_rrf_recall_at_1": 1.0,
+    "local_lexical_rrf_recall_at_3": 1.0,
+    "local_lexical_rrf_mrr": 1.0,
+    "duplicate_rank_entry_invariance": true,
+    "postgres_fts_recall_at_k": null,
+    "pgvector_recall_at_k": null,
+    "reranker_quality": null
+  },
+  "observations": [
+    {
+      "id": "labels",
+      "query": "form control label descriptive input",
+      "relevant": [
+        "wai-labels-v1"
+      ],
+      "ranking": [
+        "wai-labels-v1"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "responsive",
+      "query": "layout browser complexity calculations",
+      "relevant": [
+        "webdev-layout-v1"
+      ],
+      "ranking": [
+        "webdev-layout-v1"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "facts",
+      "query": "phone email hours prices testimonials credentials",
+      "relevant": [
+        "local-contact-v1"
+      ],
+      "ranking": [
+        "local-contact-v1"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0
+    },
+    {
+      "id": "uncertainty",
+      "query": "conversion hypothesis unavailable unverified automated",
+      "relevant": [
+        "local-verification-v1"
+      ],
+      "ranking": [
+        "local-verification-v1",
+        "wai-labels-v1"
+      ],
+      "recall_at_1": 1.0,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0
+    }
+  ],
+  "limitations": [
+    "Four authored relevance queries over four guidance documents; no independent human labels or held-out retrieval benchmark.",
+    "Both rankings are lexical token overlap; title/body RRF is not semantic hybrid search.",
+    "PostgreSQL tenant filters, full-text ranking, vector embeddings and reranking not executed by this evaluator.",
+    "Duplicate rank entries tested against actual application fusion function, not database content deduplication."
+  ]
+}

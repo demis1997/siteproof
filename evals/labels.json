@@ -1,0 +1,133 @@
+{
+  "version": "fixtures-v1",
+  "fixtures": [
+    {
+      "id": "clean",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [],
+      "human_review_labels": [],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "overflow",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [
+        "horizontal_overflow"
+      ],
+      "human_review_labels": [],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "broken_contact",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [
+        "invalid_phone_link",
+        "invalid_email_link"
+      ],
+      "human_review_labels": [],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "missing_labels",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [
+        "missing_accessible_label"
+      ],
+      "human_review_labels": [],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "weak_navigation",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [],
+      "human_review_labels": [
+        "unclear_navigation"
+      ],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "conflicting_facts",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [],
+      "human_review_labels": [
+        "conflicting_business_facts"
+      ],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "prompt_injection",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [],
+      "human_review_labels": [],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "partial_capture",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [],
+      "human_review_labels": [],
+      "expected_capture": "partial",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "timeout",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [],
+      "human_review_labels": [],
+      "expected_capture": "timeout",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    }
+  ]
+}

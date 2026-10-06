@@ -1,0 +1,61 @@
+# SiteProof
+
+Evidence-backed homepage auditing and private redesign verification for English-language service businesses. The acceptance gate requires every mandatory executable check at desktop **1440 × 1000** and mobile **390 × 844**. Design hypotheses remain unverified; failed or missing checks prevent preview acceptance.
+
+This repository implements a single-host vertical slice, with explicit deterministic fixture mode and an OpenAI-compatible live provider. It does not publish websites or claim conversion improvement. See [implementation plan](docs/IMPLEMENTATION_PLAN.md) and [architecture](docs/ARCHITECTURE.md).
+
+## Local application
+
+Requires Docker Engine with Compose, network access for image/dependency downloads, and approximately 4 GB available RAM. Run from this project folder:
+
+```sh
+cp .env.example .env
+docker compose --env-file .env -f infra/compose.yaml up --build -d
+docker compose --env-file .env -f infra/compose.yaml logs -f api worker browser web
+```
+
+Open http://localhost:3000 and sign in with the development tenant access key from `.env`. Fixture mode is visibly labelled. Submit `https://fixture.siteproof.test/overflow`, inspect source evidence, approve findings/facts, request a redesign, inspect verification, and accept only after required checks pass. Other fixture slugs: `clean`, `broken-contact`, `missing-labels`, `weak-navigation`, `conflicting-facts`, `prompt-injection`, `timeout`, `partial`.
+
+```sh
+curl http://localhost:8000/health
+curl http://localhost:8000/ready
+docker compose --env-file .env -f infra/compose.yaml down
+```
+
+Data persists in PostgreSQL, Redis AOF, and MinIO volumes. `down -v` permanently deletes local data. Private artifacts are streamed through tenant-authorized API requests. Preview HTML is authenticated, noindex, and served with a restrictive CSP. Browser workers have only an internal network and a DNS-pinning egress proxy; do not expose the capture service or remove its isolation.
+
+## Development checks
+
+Python 3.12 and Node.js 22.20 or later are supported development runtimes. Python dependencies and browser-tool dependencies are locked separately from the web app.
+
+```sh
+python3.12 -m venv .venv
+. .venv/bin/activate
+pip install -r requirements.lock
+ruff check services evals
+pytest
+python evals/run.py
+npm ci --prefix infra
+npm ci --prefix apps/web
+npm run lint --prefix apps/web
+npm run typecheck --prefix apps/web
+npm run build --prefix apps/web
+```
+
+For browser evaluation, run the web server and the harness as documented in [evaluation methodology](docs/EVALUATION.md). GitHub Actions also defines a browser slice on Ubuntu. It has not been executed remotely from this session.
+
+## Live provider configuration
+
+Set `SITEPROOF_MODE=live`, `SITEPROOF_MODEL_KEY`, model/base URL, and the three current input/output/embedding price settings in `.env`. Live mode never substitutes fixture responses. Prices are user-configured estimates, not an invoice; unmeasured costs remain unknown. Structured outputs and screenshot inputs use the official [Chat Completions contract](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create); embeddings use the official [embedding contract](https://developers.openai.com/api/reference/resources/embeddings/methods/create). Changing models requires testing modality support, schema support, embedding dimensions, and the conservative vision-token allowance. See [provider details](docs/PROVIDERS.md).
+
+## Evidence and limits
+
+DOM selectors, actual axe violations, viewport checks and Lighthouse results retain stable evidence IDs. Model findings referencing unknown IDs are rejected. All original content is treated as untrusted data. Contact facts retain source/capture provenance; candidate services and conflicting details need human approval. Only approved components render generated specifications, and the exact rendered HTML is captured and shown privately.
+
+Lighthouse is currently unavailable for inline private previews; this limitation is reported, not assigned a fake score. Automated testing does not establish WCAG compliance. Link checks cover homepage fragment targets only; other pages are outside this job's scope. No load testing, real-client conversion experiment, or independent human design study has been performed.
+
+See [API](docs/API.md), [security boundaries](docs/SECURITY.md), [deployment](docs/DEPLOYMENT.md), [baseline limitations](docs/BASELINES.md), and [demo/resume templates](docs/DEMO.md). Actual measured static-fixture results are in [the contract report](evals/reports/report.md); browser execution limitations are in [the browser failure report](evals/reports/browser/failure.md).
+
+## Verification in this development session
+
+The final observed check results and remaining integration requirements are recorded in `docs/VALIDATION.md`. Docker startup, live model requests, real PostgreSQL/Redis/MinIO integration and browser end-to-end behavior must not be inferred from unit/contract test success.
