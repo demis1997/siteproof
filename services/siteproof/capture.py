@@ -36,8 +36,8 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
             )
             requests = [0]
 
-            def guard(route, request):
-                requests[0] += 1
+            def guard(route, request, counter=requests):
+                counter[0] += 1
                 if route.request.url.startswith(("http:", "https:")):
                     try:
                         validate_url(route.request.url, resolve=False)
@@ -47,7 +47,7 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
                 if (
                     urlsplit(route.request.url).scheme not in ("http", "https", "data")
                     or route.request.method not in ("GET", "HEAD")
-                    or requests[0] > 100
+                    or counter[0] > 100
                     or route.request.resource_type in ("media", "websocket")
                 ):
                     route.abort()
