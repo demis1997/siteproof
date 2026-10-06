@@ -131,6 +131,15 @@ def main():
     Path("evals/reports/stack/retrieval.json").write_text(retrieval)
     report["checks"] = ["real axe/Lighthouse", "authenticated PNG retrieval", "idempotency", "worker kill/restart", "persisted correction", "duplicate delivery", "tenant denial", "UI images and evidence navigation", "job deletion"]
     Path("evals/reports/stack/report.json").write_text(json.dumps(report, indent=2))
+    ranking = json.loads(retrieval)
+    markdown = ["# Observed real-stack fixture integration", f"Completed fixture samples: {len(report['samples'])}."]
+    markdown += [f"- {sample['slug']}: {sample['status']}; evidence={sample['evidence']}, findings={sample['findings']}, facts={sample['facts']}" for sample in report['samples']]
+    markdown += ["\n## PostgreSQL retrieval", f"Corpus documents: {ranking['corpus_size']}; queries: {ranking['query_count']}."]
+    markdown += [f"- {arm}: {values if values is not None else 'BLOCKED: real embeddings not configured'}" for arm, values in ranking['metrics'].items()]
+    markdown += ["\n## Limits", "- Fixture audit results are not live AI results or client performance.",
+                 "- Synthetic vectors test SQL mechanics only; no semantic vector/hybrid relevance measurement without credentials.",
+                 "- No claim of production readiness or Phase 3 completion."]
+    Path("evals/reports/stack/report.md").write_text("\n".join(markdown) + "\n")
     print(json.dumps(report, indent=2))
 
 

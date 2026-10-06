@@ -126,17 +126,21 @@ def auditor(state):
     budget = Budget.model_validate(state["budget"])
     embedding = None
     if settings.mode == "live":
+        def persist_embedding(run, usage):
+            # Commit each successful embedding call before proceeding to the next remote call.
+            with db.locked_job(state["tenant"], state["job_id"]):
+                db.save_records(state["tenant"], state["job_id"], "ModelRun",
+                                [dict(run, id="embedding-" + run["content_hash"])])
+                db.update_job(state["tenant"], state["job_id"], "auditing", {"budget": usage.model_dump()})
+
         def embed():
-            index_embeddings(state["tenant"], model_provider, budget)
-            vector = cached_embedding(state["tenant"], query, model_provider, budget)
-            return {"vector": vector, "runs": model_provider.embedding_runs, "budget": budget.model_dump()}
+            index_embeddings(state["tenant"], model_provider, budget, on_run=persist_embedding)
+            vector = cached_embedding(state["tenant"], query, model_provider, budget, on_run=persist_embedding)
+            return {"vector": vector, "budget": budget.model_dump()}
 
         embedded = once(state["tenant"], state["job_id"], "embeddings-v1", embed, paid=True)
         embedding = embedded["vector"]
         budget = Budget.model_validate(embedded["budget"])
-        for index, embedding_run in enumerate(embedded["runs"]):
-            db.save_records(state["tenant"], state["job_id"], "ModelRun",
-                            [dict(embedding_run, id=f"embedding-{index}")])
         state["budget"] = budget.model_dump()
         check(state)
     guidance = retrieve(state["tenant"], query, embedding=embedding)

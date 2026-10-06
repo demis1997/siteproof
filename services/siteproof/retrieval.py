@@ -26,7 +26,7 @@ def embedding_identity():
     return f"{settings.embedding_model}@{settings.embedding_version}:1536:{endpoint}"
 
 
-def cached_embedding(tenant, text, model_provider, budget=None):
+def cached_embedding(tenant, text, model_provider, budget=None, on_run=None):
     digest = hashlib.sha256(text.encode()).hexdigest()
     with connection() as conn:
         cached = conn.execute(
@@ -39,6 +39,8 @@ def cached_embedding(tenant, text, model_provider, budget=None):
 
         return json.loads(cached["embedding"])
     vector = model_provider.embeddings([text], budget=budget)[0]
+    if on_run:
+        on_run(dict(model_provider.last_embedding_run, content_hash=digest), budget)
     if len(vector) != 1536 or not all(math.isfinite(x) for x in vector):
         raise ValueError("Invalid embedding vector")
     with connection() as conn:
@@ -50,7 +52,7 @@ def cached_embedding(tenant, text, model_provider, budget=None):
     return vector
 
 
-def index_embeddings(tenant, model_provider, budget=None, collection="guidance", limit=20):
+def index_embeddings(tenant, model_provider, budget=None, collection="guidance", limit=20, on_run=None):
     """Bounded content/model-aware indexing; stale vector models cannot be ranked."""
     with connection() as conn:
         chunks = conn.execute(
@@ -61,7 +63,7 @@ def index_embeddings(tenant, model_provider, budget=None, collection="guidance",
             (tenant, collection, embedding_identity(), limit),
         ).fetchall()
     for chunk in chunks:
-        vector = cached_embedding(tenant, chunk["content"], model_provider, budget)
+        vector = cached_embedding(tenant, chunk["content"], model_provider, budget, on_run=on_run)
         with connection() as conn:
             conn.execute(
                 "UPDATE knowledge_chunks SET embedding=%s::vector,embedding_model=%s WHERE tenant_id=%s AND id=%s",

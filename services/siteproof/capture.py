@@ -36,7 +36,7 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
             )
             requests = [0]
 
-            def guard(route, requests=requests):
+            def guard(route, request):
                 requests[0] += 1
                 if route.request.url.startswith(("http:", "https:")):
                     try:

@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "services"))
 from retrieval_run import QUERIES
 from siteproof.config import settings
 from siteproof.contracts import Budget
+from siteproof.db import connection
 from siteproof.providers import LiveProvider
 from siteproof.retrieval import cached_embedding, index_embeddings, retrieve
 
@@ -42,7 +43,9 @@ def run(tenant):
         rows = [r for r in observations if r["strategy"] == strategy]
         metrics[strategy] = {key: sum(r[key] for r in rows) / len(rows) for key in (
             "recall_at_1", "recall_at_3", "reciprocal_rank")} if rows else None
-    report = {"generated_at": datetime.now(UTC).isoformat(), "query_count": len(QUERIES), "corpus_size": 4,
+    with connection() as conn:
+        corpus_size = conn.execute("SELECT count(*) AS count FROM knowledge_documents WHERE tenant_id=%s AND collection='guidance'", (tenant,)).fetchone()["count"]
+    report = {"generated_at": datetime.now(UTC).isoformat(), "query_count": len(QUERIES), "corpus_size": corpus_size,
               "corpus_version": "guidance-v1", "embedding_model": settings.embedding_model if model else None,
               "embedding_dimensions": 1536 if model else None, "metrics": metrics, "observations": observations,
               "live_embedding_runs": model.embedding_runs if model else [],
