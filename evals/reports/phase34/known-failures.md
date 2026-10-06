@@ -7,3 +7,4 @@
 - UI harness started once before web startup and then used an unauthenticated context for its preview probe. Corrected startup ordering and authenticated browser context; observed UI checks passed.
 
 These are development observations, not omitted benchmark samples or live model quality judgments. Functional reports identify their successful samples and synthetic scope. Human quality remains unreviewed.
+- The final Phase 1–2 regression probe exposed unnecessary repeated Lighthouse on a viewport with no DOM after navigation timeout. Added an unavailable-evidence path and a regression test; required verification still rejects missing measurements.

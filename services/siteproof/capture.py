@@ -269,6 +269,9 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
     with private_document(lighthouse_html) as private_url:
         measurement_url = private_url or url
         for viewport in VIEWPORTS:
+            if not any(e.get("kind") == "dom" and e.get("viewport") == viewport for e in evidence):
+                evidence.append({"id": "lighthouse-" + viewport, "kind": "unavailable", "name": "lighthouse", "viewport": viewport, "sample_count": 0, "reason": "Viewport DOM capture failed; Lighthouse cannot verify that capture"})
+                continue
             samples = []
             for _ in range(2):
                 if cancel_event is not None and cancel_event.is_set():
