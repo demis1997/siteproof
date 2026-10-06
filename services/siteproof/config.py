@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     redis_url: str = "redis://redis:6379/0"
     tenant_keys_json: str = ""
     test_fixture_http: bool = False
+    live_validation_fixture: bool = False
     browser_key: str = "local-browser-key"
     tenant_key: str = "local-development-key"
     artifact_secret: str = "change-this-local-artifact-secret"

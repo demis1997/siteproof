@@ -21,8 +21,15 @@ def test_fixture_url(url: str) -> bool:
 
     parsed = urlsplit(url)
     return (
-        settings.test_fixture_http
-        and settings.mode == "fixture"
+        (
+            (settings.test_fixture_http and settings.mode == "fixture")
+            or (
+                settings.live_validation_fixture
+                and settings.mode == "live"
+                and parsed.path == "/overflow"
+                and not parsed.query
+            )
+        )
         and parsed.scheme == "http"
         and parsed.hostname == "fixture.siteproof.test"
         and parsed.port in (None, 80)

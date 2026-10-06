@@ -69,3 +69,17 @@ Report: recall@3/@5, MRR, nDCG@5, actual SQL p50/p95 query latency, embedding ca
 `services/tests/test_live_validation.py` uses deterministic HTTP transports for missing credentials, separate keys, PNG request bytes, malformed output, incorrect models/dimensions, timeouts, HTTP401/429/500, budgets and unknown cost. Journal tests simulate success replay, transport interruption and a response lost before durable save. These are NOT live-provider measurements and do not establish exactly-once model execution.
 
 Run `pytest -q`, `ruff check services evals`, web lint/types/build/renderer tests and the existing real-stack fixture harness. Actual PostgreSQL allocation tests use simulated prices/FX without paid calls. Live hypotheses stay uncertain until independently reviewed; executable evidence can support objective defect categories but not every phrasing or inferred business effect. Existing Phase 3/4 limitations remain unchanged.
+
+## Controlled local live-model validation (explicit opt-in)
+
+Public hosting of the application or fixture is unnecessary for this test. `SITEPROOF_LIVE_VALIDATION_FIXTURE` defaults to false. Only the separate `infra/compose.live-validation.yaml` override enables it on API, worker, browser and proxy. Keep the root `.env` in live mode. Never use this override for production:
+
+```sh
+docker compose --env-file .env -f infra/compose.yaml -f infra/compose.live-validation.yaml --profile integration up --build -d
+```
+
+The only admitted test URL is `http://fixture.siteproof.test:80/overflow` (omitting the default port is equivalent). No queries, credentials, other fixture paths, ports or hostnames are admitted. The proxy maps that literal route to the isolated `fixture:8082` service and pins the resolved socket address. It does not connect to an operator-configurable private destination. The browser has no direct egress; request interception and the proxy validate redirects and subrequests individually. The static overflow page has no external dependencies. This captures real browser evidence, with live AI still selected; it never changes model mode to fixture.
+
+To disable, recreate services with the base Compose file only and stop the integration-profile fixture service. No production allowlist is configured. Automated URL/proxy tests and actual capture results are documented separately from live provider success.
+
+The initial embedding request received HTTP429, but the former runner discarded its response body. Its error code/message cannot be recovered from the saved trace. No second call is authorized solely to rediscover it. Future evaluator failures save only recognised codes and fixed sanitised messages: insufficient_quota requires checking the key's API organization/project billing credits and spending allowance; rate_limit_exceeded requires checking model/project RPM/TPM limits and waiting or requesting an increase. Unknown codes remain unknown. Provider response text is never echoed. The previous benchmark allocation remains reserved; do not create a new session or reset the ledger to bypass it. Resolve account access before a deliberately reviewed resume within the same allocation and cumulative limits. No exactly-once or known-cost claim follows a failed response without usage.

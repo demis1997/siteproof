@@ -1,0 +1,14 @@
+# Explicit local test override. Never use for production. No secret values here.
+services:
+  api:
+    environment:
+      SITEPROOF_LIVE_VALIDATION_FIXTURE: 'true'
+  worker:
+    environment:
+      SITEPROOF_LIVE_VALIDATION_FIXTURE: 'true'
+  browser:
+    environment:
+      SITEPROOF_LIVE_VALIDATION_FIXTURE: 'true'
+  proxy:
+    environment:
+      SITEPROOF_LIVE_VALIDATION_FIXTURE: 'true'

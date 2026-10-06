@@ -17,6 +17,35 @@ from .config import settings
 from .contracts import Budget, Finding, PageSpec, preserve_facts, validate_findings
 
 
+def provider_error_report(response):
+    """Only retain known error codes and fixed messages, never echo provider content."""
+    try:
+        code = response.json().get("error", {}).get("code")
+    except (ValueError, AttributeError):
+        code = None
+    meanings = {
+        "insufficient_quota": (
+            "Provider reports insufficient quota or billing allowance.",
+            "Check the key's OpenAI organization/project billing, available API credits and spending limits.",
+        ),
+        "rate_limit_exceeded": (
+            "Provider reports a request/token rate limit.",
+            "Check project/model RPM and TPM limits and wait for the limit window to reset; request a limit increase if needed.",
+        ),
+        "invalid_api_key": (
+            "Provider rejected the API credential.",
+            "Replace the credential locally with an active key for the intended project.",
+        ),
+    }
+    message, action = meanings.get(code, (
+        "Provider rejected the request; error subtype is unavailable or unrecognised.",
+        "Inspect project billing/quota and model rate limits; do not infer the cause from HTTP status alone.",
+    ))
+    return {"http_status": response.status_code, "error_code": code if code in meanings else None,
+            "sanitised_message": message, "account_action": action, "cost_usd": None,
+            "automatic_retry": False}
+
+
 class FindingsResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
     findings: list[Finding]

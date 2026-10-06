@@ -1,0 +1,85 @@
+{
+  "status": "PASS",
+  "mode": "live",
+  "url": "http://fixture.siteproof.test/overflow",
+  "partial": false,
+  "evidence_count": 18,
+  "screenshots": [
+    {
+      "viewport": "desktop",
+      "fields": [
+        "id",
+        "viewport",
+        "png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "fields": [
+        "id",
+        "viewport",
+        "png"
+      ]
+    }
+  ],
+  "overflow_checks": [],
+  "generated_at": "2026-10-06T19:09:57.261060+00:00",
+  "network_checks": [
+    {
+      "url": "http://127.0.0.1/overflow",
+      "status_code": 422,
+      "blocked": true
+    },
+    {
+      "url": "http://10.0.0.1/overflow",
+      "status_code": 422,
+      "blocked": true
+    },
+    {
+      "url": "http://169.254.169.254/overflow",
+      "status_code": 422,
+      "blocked": true
+    },
+    {
+      "url": "http://fixture.siteproof.test:8082/overflow",
+      "status_code": 422,
+      "blocked": true
+    },
+    {
+      "url": "http://fixture.siteproof.test/clean",
+      "status_code": 422,
+      "blocked": true
+    },
+    {
+      "boundary": "proxy",
+      "url": "http://127.0.0.1/overflow",
+      "status_code": 403,
+      "blocked": true
+    },
+    {
+      "boundary": "proxy",
+      "url": "http://169.254.169.254/overflow",
+      "status_code": 403,
+      "blocked": true
+    },
+    {
+      "boundary": "proxy",
+      "url": "http://fixture.siteproof.test/clean",
+      "status_code": 403,
+      "blocked": true
+    }
+  ],
+  "validation_ledger": {
+    "requesters": [
+      {
+        "kind": "retrieval",
+        "tenant": "retrieval_benchmark_v1"
+      }
+    ],
+    "audit_count": 0,
+    "allocated_usd": 1.0,
+    "retrieval_count": 1,
+    "monetary_ceiling_verified": true
+  },
+  "paid_calls_this_run": 0
+}

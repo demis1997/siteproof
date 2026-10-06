@@ -1,0 +1,17 @@
+{
+  "status": "BLOCKED",
+  "observed_http_status": 429,
+  "error_code": null,
+  "sanitised_message": "Embedding request rejected with HTTP 429; original response body was not retained.",
+  "classification": "Unknown: insufficient quota/billing versus request/token rate limits cannot be distinguished from saved evidence",
+  "new_provider_requests": 0,
+  "automatic_retries": 0,
+  "cost_usd": null,
+  "backend_tests_passed": 127,
+  "lint": "PASS",
+  "controlled_fixture_capture": "PASS",
+  "live_audits_submitted": 0,
+  "held_out_labels": "unchanged",
+  "production_default_fixture_exception": false,
+  "account_action": "Inspect the OpenAI organization/project owning the embedding key: billing/available API credits and spending limits, then model/project RPM/TPM limits. Report only quota/billing versus rate-limit status; never credentials."
+}

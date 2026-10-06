@@ -12,13 +12,15 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 
+import httpx
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "services"))
 from siteproof.config import settings
 from siteproof.contracts import Budget
 from siteproof.db import connection
 from siteproof.live_limits import allocate
-from siteproof.providers import LiveProvider
+from siteproof.providers import LiveProvider, provider_error_report
 from siteproof.retrieval import cached_embedding, embedding_identity, index_embeddings, retrieve
 
 
@@ -196,4 +198,10 @@ if __name__ == "__main__":
     parser.add_argument("--live-embeddings", action="store_true")
     parser.add_argument("--session", default="live-validation-v1")
     args = parser.parse_args()
-    run(args.tenant, args.live_embeddings, args.session)
+    try:
+        run(args.tenant, args.live_embeddings, args.session)
+    except httpx.HTTPStatusError as exc:
+        print(json.dumps({"status": "BLOCKED", "code_commit": code_commit(),
+                          "provider_error": provider_error_report(exc.response),
+                          "allocation": "Retained; investigate before any resume", "metrics": None}, indent=2))
+        sys.exit(1)
