@@ -124,3 +124,11 @@ def test_model_cannot_cite_nonexistent_guidance(configured, monkeypatch):
     mock_chat(monkeypatch, raw)
     with pytest.raises(ValueError, match="nonexistent guidance"):
         LiveProvider().findings([{"id": "real", "kind": "dom"}], [{"id": "real-source"}])
+
+
+def test_hypothesis_cannot_invent_conversion_measurement(configured, monkeypatch):
+    raw = finding()
+    raw["claim"] = "This improves conversion by 20%"
+    mock_chat(monkeypatch, raw)
+    with pytest.raises(ValueError, match="Unsupported quantitative"):
+        LiveProvider().findings([{"id": "real", "kind": "dom"}], [])

@@ -4,9 +4,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "services"))
 from siteproof import db
-from siteproof.config import settings
 from siteproof.journal import once
-from siteproof.retrieval import retrieve
+from siteproof.retrieval import embedding_identity, retrieve
 
 
 def run(tenant, job_id):
@@ -17,7 +16,7 @@ def run(tenant, job_id):
         try:
             vector = [1.0] + [0.0] * 1535
             conn.execute("UPDATE knowledge_chunks SET embedding=%s::vector,embedding_model=%s WHERE tenant_id=%s",
-                         (str(vector), settings.embedding_model, tenant))
+                         (str(vector), embedding_identity(), tenant))
             rows = retrieve(tenant, "label OR form", embedding=vector, strategy="hybrid")
             assert rows and all(row["id"].startswith(tenant + ":") for row in rows)
             assert retrieve(tenant, "no-match-word", embedding=vector, strategy="vector")

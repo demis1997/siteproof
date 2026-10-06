@@ -42,7 +42,7 @@ npm run typecheck --prefix apps/web
 npm run build --prefix apps/web
 ```
 
-For browser evaluation, run the web server and the harness as documented in [evaluation methodology](docs/EVALUATION.md). GitHub Actions also defines a browser slice on Ubuntu. It has not been executed remotely from this session.
+For browser evaluation, run the web server and the harness as documented in [evaluation methodology](docs/EVALUATION.md). GitHub Actions also defines a browser slice on Ubuntu. The original isolated browser job passed on GitHub; full-stack Phase 1–2 verification is tracked in [the milestone checklist](docs/PHASE12.md).
 
 ## Live provider configuration
 
@@ -59,3 +59,7 @@ See [API](docs/API.md), [security boundaries](docs/SECURITY.md), [deployment](do
 ## Verification in this development session
 
 The final observed check results and remaining integration requirements are recorded in `docs/VALIDATION.md`. Docker startup, live model requests, real PostgreSQL/Redis/MinIO integration and browser end-to-end behavior must not be inferred from unit/contract test success.
+
+## Phase 1–2 integration milestone
+
+See [the observed checklist and exact commands](docs/PHASE12.md). The integration profile uses an explicitly enabled HTTP fixture host to exercise real Lighthouse through the isolated proxy. Production/live URL restrictions remain enabled. MinIO now builds a pinned upstream source release because public prebuilt-image pulls returned access denied. Live AI and semantic retrieval results require private credentials and configured prices.

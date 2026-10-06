@@ -20,13 +20,19 @@ def reciprocal_rank_fusion(rankings, k=60):
     return sorted(scores, key=lambda identifier: (-scores[identifier], identifier))
 
 
+def embedding_identity():
+    # Prevent reuse across model revisions or different OpenAI-compatible provider endpoints.
+    endpoint = hashlib.sha256(settings.model_url.rstrip("/").encode()).hexdigest()[:12]
+    return f"{settings.embedding_model}@{settings.embedding_version}:1536:{endpoint}"
+
+
 def cached_embedding(tenant, text, model_provider, budget=None):
     digest = hashlib.sha256(text.encode()).hexdigest()
     with connection() as conn:
         cached = conn.execute(
             "SELECT embedding::text AS embedding FROM embedding_cache "
             "WHERE tenant_id=%s AND content_hash=%s AND model=%s",
-            (tenant, digest, settings.embedding_model),
+            (tenant, digest, embedding_identity()),
         ).fetchone()
     if cached:
         import json
@@ -39,7 +45,7 @@ def cached_embedding(tenant, text, model_provider, budget=None):
         conn.execute(
             "INSERT INTO embedding_cache(tenant_id,content_hash,model,embedding) "
             "VALUES(%s,%s,%s,%s::vector) ON CONFLICT DO NOTHING",
-            (tenant, digest, settings.embedding_model, str(vector)),
+            (tenant, digest, embedding_identity(), str(vector)),
         )
     return vector
 
@@ -52,14 +58,14 @@ def index_embeddings(tenant, model_provider, budget=None, collection="guidance",
             "ON d.id=c.document_id AND d.tenant_id=c.tenant_id "
             "WHERE c.tenant_id=%s AND d.collection=%s "
             "AND (c.embedding IS NULL OR c.embedding_model IS DISTINCT FROM %s) ORDER BY c.id LIMIT %s",
-            (tenant, collection, settings.embedding_model, limit),
+            (tenant, collection, embedding_identity(), limit),
         ).fetchall()
     for chunk in chunks:
         vector = cached_embedding(tenant, chunk["content"], model_provider, budget)
         with connection() as conn:
             conn.execute(
                 "UPDATE knowledge_chunks SET embedding=%s::vector,embedding_model=%s WHERE tenant_id=%s AND id=%s",
-                (str(vector), settings.embedding_model, tenant, chunk["id"]),
+                (str(vector), embedding_identity(), tenant, chunk["id"]),
             )
 
 
@@ -114,7 +120,7 @@ def retrieve(tenant, query, embedding=None, limit=5, collection="guidance", job_
             semantic = conn.execute(
                 base + " AND c.embedding IS NOT NULL AND c.embedding_model=%s "
                 "ORDER BY c.embedding <=> %s::vector,c.id LIMIT 20",
-                (*args, settings.embedding_model, str(embedding)),
+                (*args, embedding_identity(), str(embedding)),
             ).fetchall()
     if strategy == "keyword":
         semantic = []

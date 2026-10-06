@@ -90,6 +90,9 @@ def main():
         except Exception as exc:
             retryable = is_retryable(exc)
             attempt = task.get("attempt", 0) + 1
+            with connection() as conn:
+                conn.execute("UPDATE audit_jobs SET retry_count=%s WHERE tenant_id=%s AND id=%s",
+                             (attempt, tenant, job_id))
             if retryable and attempt <= 3:
                 task["attempt"] = attempt
                 browser_busy = isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code == 429

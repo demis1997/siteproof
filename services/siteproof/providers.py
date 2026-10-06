@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import re
 import time
 from typing import Protocol
 
@@ -211,6 +212,10 @@ class LiveProvider:
         for finding in raw:
             if not set(finding["guidance_ids"]) <= guidance_ids:
                 raise ValueError("Finding references nonexistent guidance sources")
+            if finding["kind"] == "design_hypothesis" and re.search(
+                r"\d+(?:\.\d+)?\s*%|(?:increase|boost|improve)\s+(?:sales|conversion)", finding["claim"], re.IGNORECASE
+            ):
+                raise ValueError("Unsupported quantitative or conversion claim")
             finding["approved"] = False
             if finding["kind"] == "objective_defect" and not any(
                 (available.get(i, {}).get("passed") is False or available.get(i, {}).get("kind") == "axe")

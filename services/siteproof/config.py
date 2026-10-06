@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     model_url: str = "https://api.openai.com/v1"
     model_key: str = ""
     model_id: str = "gpt-4.1-mini"
+    embedding_version: str = "v1"
     embedding_model: str = "text-embedding-3-small"
     browser_url: str = "http://browser:8081"
     s3_endpoint: str = "http://minio:9000"

@@ -1,4 +1,5 @@
 """Durable Auditor substeps. Uncertain paid calls require review, never automatic replay."""
+import httpx
 from psycopg.types.json import Jsonb
 
 from .db import connection
@@ -19,7 +20,15 @@ def once(tenant, job_id, step, operation, *, paid=False):
             "ON CONFLICT(tenant_id,job_id,step) DO UPDATE SET status='started'",
             (tenant, job_id, step),
         )
-    result = operation()
+    try:
+        result = operation()
+    except httpx.HTTPStatusError as exc:
+        # A provider's explicit rate-limit rejection is safe to retry. Transport failures remain uncertain.
+        if exc.response.status_code == 429:
+            with connection() as conn:
+                conn.execute("DELETE FROM workflow_steps WHERE tenant_id=%s AND job_id=%s AND step=%s",
+                             (tenant, job_id, step))
+        raise
     with connection() as conn:
         conn.execute(
             "UPDATE workflow_steps SET status='succeeded',result=%s,updated_at=now() "

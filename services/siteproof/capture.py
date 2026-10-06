@@ -182,7 +182,21 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
                                 "approved": False,
                             }
                         )
+                    existing_contacts = {(f["kind"], re.sub(r"[(). \-]", "", f["value"])) for f in facts}
                     for i, line in enumerate(dom["text"].splitlines()):
+                        # Retain conflicting visible contact candidates, including those outside links.
+                        candidates = [("email", m.group(0)) for m in re.finditer(r"[^@\s<>]+@[^@\s<>]+\.[^@\s<>.,]+", line)]
+                        candidates += [("phone", m.group(1).strip(" .")) for m in re.finditer(
+                            r"(?:call|phone|tel)\s*:?\s*(\+?[0-9][0-9(). \-]{6,}[0-9.])", line, re.IGNORECASE)]
+                        for kind, value in candidates:
+                            key = (kind, re.sub(r"[(). \-]", "", value))
+                            if key in existing_contacts or (kind == "phone" and not valid_phone(value)):
+                                continue
+                            existing_contacts.add(key)
+                            facts.append({"id": f"fact-visible-{i}-{kind}", "kind": kind, "value": value,
+                                          "href": ("mailto:" if kind == "email" else "tel:") + value,
+                                          "source_url": source_url, "evidence_id": eid, "captured_at": stamp,
+                                          "approved": False, "uncertainty": "Visible contact candidate; review multiple values for conflicts"})
                         line = line.strip()
                         kind = (
                             "price"

@@ -52,3 +52,14 @@ def test_uncertain_paid_call_requires_review(monkeypatch):
     connection_for(monkeypatch, {"status": "started", "result": None})
     with pytest.raises(ValueError, match="Uncertain in-flight"):
         journal.once("t", "j", "audit", lambda: pytest.fail("Replayed uncertain call"), paid=True)
+
+
+def test_embedding_identity_invalidates_endpoint_and_version(monkeypatch):
+    from siteproof.retrieval import embedding_identity
+
+    original = embedding_identity()
+    monkeypatch.setattr(settings, "embedding_version", "new-version")
+    revised = embedding_identity()
+    assert revised != original
+    monkeypatch.setattr(settings, "model_url", "https://different-provider.example/v1")
+    assert embedding_identity() != revised
