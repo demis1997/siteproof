@@ -49,3 +49,7 @@ python evals/retrieval_run.py
 Use the locked Python/Node dependencies and runtimes documented in README. The named integration project isolates storage; its fixed test tenant keys are only for the controlled development workflow.
 
 Final code CI: [run 37469005781](https://github.com/demis1997/siteproof/actions/runs/37469005781) passed backend, frontend, isolated browser and real-stack jobs on `983658c`. Subsequent documentation/report commits retain the same application code; their own CI status should be inspected separately.
+
+## Live-validation follow-up
+
+See `docs/LIVE_VALIDATION.md` and `evals/reports/live` for the subsequent credential-blocked milestone. Local tests increased to 109 and existing real-stack fixture regression passed again. The expanded real PostgreSQL benchmark has 18 documents and 32 queries; semantic metrics remain null. The held-out keyword no-answer false-answer rate is 0.50 (two examples), so raw retrieval is not calibrated abstention. No live audit/embedding call, independent relevance review, or live human design rating was performed. The new live-mode badge is implemented/build-checked but has not been inspected on a real live result.

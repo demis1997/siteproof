@@ -1,0 +1,1 @@
+PASS: actual PostgreSQL shared allocations; max three audits, one retrieval run and EUR5 gate with simulated prices/FX. No paid calls.

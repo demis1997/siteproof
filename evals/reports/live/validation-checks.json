@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-10-06T13:53:38.649179+00:00",
+  "tested_application_commit": "66596630c0ee19cf0f1d413947e3251bfc724335",
+  "backend": {
+    "lint": "PASS",
+    "tests": "PASS",
+    "test_count": 109
+  },
+  "frontend": {
+    "lint": "PASS",
+    "typecheck": "PASS",
+    "production_build": "PASS",
+    "renderer_tests": "PASS",
+    "renderer_test_count": 4
+  },
+  "fixture_regression": {
+    "status": "PASS",
+    "ordinary_audits": 6,
+    "timeout_audits": 1,
+    "dashboard_submitted_audits": 1,
+    "source_report": "../stack/report.json",
+    "scope": "Actual Docker services; capture/recovery path. Live-only helper changes subsequently checked by unit tests and CI."
+  },
+  "allocation_guard": {
+    "status": "PASS",
+    "boundary": "Actual PostgreSQL; prices/FX simulated; no paid calls",
+    "source_report": "allocation-checks.txt"
+  },
+  "live_provider": {
+    "status": "BLOCKED",
+    "live_audits": 0,
+    "embedding_requests": 0,
+    "cost": null,
+    "keys_present": false
+  },
+  "human_review": {
+    "status": "UNVERIFIED",
+    "labels_author": "coding-agent",
+    "independent_relevance_review": false,
+    "live_hypothesis_review": false
+  },
+  "observation_environment": "local Docker and host tests; not a claim about pending CI"
+}

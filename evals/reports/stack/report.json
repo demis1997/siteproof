@@ -1,10 +1,10 @@
 {
-  "run_id": "c92e405e-b1d2-4083-b9e8-37767faeed9c",
+  "run_id": "ea9777e9-ff6b-4d1f-81fe-a48a7d14c8ab",
   "mode": "fixture",
   "samples": [
     {
       "slug": "clean",
-      "job_id": "d008ac31-4309-4d86-a8c9-a8d16f37ddaf",
+      "job_id": "ac3c699e-a8cb-42e8-9b56-21957556f5de",
       "evidence": 20,
       "findings": 0,
       "facts": 6,
@@ -12,7 +12,7 @@
     },
     {
       "slug": "overflow",
-      "job_id": "e60798da-e59e-44f4-9c65-d57bac51664e",
+      "job_id": "4a5583a8-aed1-4d2d-bd7c-53fa72281d48",
       "evidence": 20,
       "findings": 1,
       "facts": 6,
@@ -20,7 +20,7 @@
     },
     {
       "slug": "broken-contact",
-      "job_id": "1d1e569c-2359-4595-96e2-9947b29f11a2",
+      "job_id": "0290f156-34ba-4a72-82be-5fc3b0047324",
       "evidence": 20,
       "findings": 2,
       "facts": 6,
@@ -28,7 +28,7 @@
     },
     {
       "slug": "missing-labels",
-      "job_id": "3bb42d9f-6001-4fad-a7aa-4198cb383ea5",
+      "job_id": "9f0f3a5d-441c-411c-b44b-b092e2ca2c84",
       "evidence": 22,
       "findings": 6,
       "facts": 6,
@@ -36,7 +36,7 @@
     },
     {
       "slug": "conflicting-facts",
-      "job_id": "18f372d0-9d3f-41e6-baa9-ff45ae9a043d",
+      "job_id": "758f47f4-c7ad-400d-8fc3-b5b2d32c417a",
       "evidence": 20,
       "findings": 0,
       "facts": 8,
@@ -44,7 +44,7 @@
     },
     {
       "slug": "prompt-injection",
-      "job_id": "4ced3949-da05-4e2a-8958-4a5e01b9af26",
+      "job_id": "34beb7fc-f615-43c5-8191-cf464c059b55",
       "evidence": 20,
       "findings": 0,
       "facts": 6,
@@ -53,12 +53,12 @@
   ],
   "live_audit": "UNVERIFIED: credentials not configured",
   "timeout": {
-    "job_id": "971ef753-4257-4a9f-8b40-d4d240da3ed7",
+    "job_id": "c562f319-1b71-4cd7-aa25-91c8af9a1809",
     "partial": true,
     "status": "PASS"
   },
   "ui": {
-    "job_id": "480c2911-5d16-491d-805f-a7ee23564a02",
+    "job_id": "de78c44b-20de-4168-85fa-09351827d76d",
     "status": "PASS",
     "checks": [
       "login",
@@ -81,11 +81,5 @@
     "tenant denial",
     "UI images and evidence navigation",
     "job deletion"
-  ],
-  "approval_check": {
-    "job_id": "e60798da-e59e-44f4-9c65-d57bac51664e",
-    "status": "PASS",
-    "finding_id": "finding-horizontal_overflow-mobile",
-    "fact_id": "fact-0"
-  }
+  ]
 }

@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-10-06T13:53:01.762268+00:00",
+  "code_commit": "66596630c0ee19cf0f1d413947e3251bfc724335",
+  "mode": "fixture",
+  "status": "BLOCKED",
+  "live_audits_submitted": 0,
+  "actual_live_tokens": null,
+  "cost_usd": null,
+  "configuration": {
+    "chat_endpoint": "https://api.openai.com/v1",
+    "chat_model": "gpt-4.1-mini",
+    "embedding_endpoint": "https://api.openai.com/v1",
+    "embedding_model": "text-embedding-3-small",
+    "embedding_version": "v1",
+    "dimensions": 1536,
+    "credential_sharing": false,
+    "chat_key_present": false,
+    "embedding_key_present": false,
+    "prices_known": false
+  },
+  "limitations": [
+    "No exactly-once model execution claim. Request hashes prove transmitted bytes, not remote vision comprehension.",
+    "Human design/hypothesis judgments are unverified. Fixture and live results must remain separate."
+  ],
+  "blocker": "Set live mode, SITEPROOF_MODEL_KEY and separate embedding key or explicit sharing. No provider call was attempted."
+}
