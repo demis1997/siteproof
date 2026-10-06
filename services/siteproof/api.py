@@ -153,7 +153,17 @@ def detail(job_id: str, t: str = Depends(tenant)):
 
 @app.get("/api/jobs/{job_id}/{kind}")
 def items(job_id: str, kind: str, t: str = Depends(tenant)):
-    job_or_404(t, job_id)
+    job = job_or_404(t, job_id)
+    if kind == "guidance":
+        ids = job["data"].get("guidance_ids", [])
+        with db.connection() as conn:
+            rows = conn.execute(
+                "SELECT c.id,c.content,d.source,d.version,d.retrieved_at,d.reuse_notes "
+                "FROM knowledge_chunks c JOIN knowledge_documents d ON d.id=c.document_id AND d.tenant_id=c.tenant_id "
+                "WHERE c.tenant_id=%s AND d.collection='guidance' AND c.id=ANY(%s) ORDER BY c.id",
+                (t, ids),
+            ).fetchall()
+        return {"items": rows}
     mapping = {
         "evidence": "Evidence",
         "findings": "Finding",

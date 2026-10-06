@@ -1,5 +1,6 @@
 """Explicit integration-only server, fixed fixture names; no filesystem traversal."""
-from http.server import BaseHTTPRequestHandler, HTTPServer
+import time
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 NAMES = {"clean": "clean", "overflow": "overflow", "broken-contact": "broken_contact",
@@ -10,6 +11,10 @@ NAMES = {"clean": "clean", "overflow": "overflow", "broken-contact": "broken_con
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         slug = self.path.split("?", 1)[0].strip("/")
+        if slug == "timeout":
+            time.sleep(25)  # Actual navigation timeout, not a simulated capture result.
+            self.send_error(504)
+            return
         if slug not in NAMES:
             self.send_error(404)
             return
@@ -22,4 +27,4 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    HTTPServer(("0.0.0.0", 8082), Handler).serve_forever()
+    ThreadingHTTPServer(("0.0.0.0", 8082), Handler).serve_forever()

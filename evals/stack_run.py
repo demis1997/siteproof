@@ -61,6 +61,8 @@ def main():
         evidence = request("GET", f"/api/jobs/{identifier}/evidence")["items"]
         findings = request("GET", f"/api/jobs/{identifier}/findings")["items"]
         facts = request("GET", f"/api/jobs/{identifier}/facts")["items"]
+        guidance = request("GET", f"/api/jobs/{identifier}/guidance")["items"]
+        assert guidance and all(g["id"].startswith("integration:") and g["source"] and g["version"] for g in guidance)
         ids = {e["id"] for e in evidence}
         assert len(ids) == len(evidence)
         for viewport in ("desktop", "mobile"):
@@ -93,6 +95,16 @@ def main():
             time.sleep(6)
             assert len(request("GET", f"/api/jobs/{identifier}/runs")["items"]) == 1
         report["samples"].append({"slug": slug, "job_id": identifier, "evidence": len(evidence), "findings": len(findings), "facts": len(facts), "status": "PASS"})
+    response = httpx.post(API + "/api/jobs", headers=dict(HEADERS, **{"Idempotency-Key": "integration-timeout"}),
+                          json={"url": "http://fixture.siteproof.test/timeout"})
+    response.raise_for_status()
+    timeout_job = response.json()["id"]
+    wait_job(timeout_job)
+    captures = request("GET", f"/api/jobs/{timeout_job}/captures")["items"]
+    assert captures and captures[0]["partial"]
+    timeout_evidence = request("GET", f"/api/jobs/{timeout_job}/evidence")["items"]
+    assert any(e["kind"] == "unavailable" and e["name"] == "capture" for e in timeout_evidence)
+    report["timeout"] = {"job_id": timeout_job, "partial": True, "status": "PASS"}
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": 1440, "height": 1000})
