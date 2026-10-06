@@ -20,3 +20,5 @@ Corpus documents: 4; queries: 4.
 - Fixture audit results are not live AI results or client performance.
 - Synthetic vectors test SQL mechanics only; no semantic vector/hybrid relevance measurement without credentials.
 - No claim of production readiness or Phase 3 completion.
+
+Final code CI: [run 37469005781](https://github.com/demis1997/siteproof/actions/runs/37469005781) passed backend, frontend, isolated browser and real-stack jobs on `983658c`. Subsequent documentation/report commits retain the same application code; their own CI status should be inspected separately.

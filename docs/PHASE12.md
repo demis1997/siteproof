@@ -65,3 +65,5 @@ docker compose --env-file .env -f infra/compose.yaml exec -T worker python evals
 ```
 
 The evaluator compares keyword/vector/hybrid recall@1, recall@3 and MRR on four manually checked authored queries and four corpus documents. With missing credentials/prices only PostgreSQL keyword measurements run; vector/hybrid metrics remain null. Synthetic vectors in `db_checks.py` verify SQL mechanics and tenant/model filtering, not embedding relevance. No claim that hybrid beats another arm is made.
+
+Final code CI: [run 37469005781](https://github.com/demis1997/siteproof/actions/runs/37469005781) passed backend, frontend, isolated browser and real-stack jobs on `983658c`. Subsequent documentation/report commits retain the same application code; their own CI status should be inspected separately.

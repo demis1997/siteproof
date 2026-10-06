@@ -47,3 +47,5 @@ python evals/retrieval_run.py
 ```
 
 Use the locked Python/Node dependencies and runtimes documented in README. The named integration project isolates storage; its fixed test tenant keys are only for the controlled development workflow.
+
+Final code CI: [run 37469005781](https://github.com/demis1997/siteproof/actions/runs/37469005781) passed backend, frontend, isolated browser and real-stack jobs on `983658c`. Subsequent documentation/report commits retain the same application code; their own CI status should be inspected separately.
