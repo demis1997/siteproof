@@ -9,6 +9,7 @@ from siteproof.providers import FindingsResponse, FixtureProvider, LiveProvider,
 @pytest.fixture
 def configured(monkeypatch):
     monkeypatch.setattr(settings, "mode", "live")
+    monkeypatch.setattr(settings, "embedding_use_model_credentials", True)
     monkeypatch.setattr(settings, "model_key", "test-credential-not-live")
     monkeypatch.setattr(settings, "input_cost_per_million", 1.0)
     monkeypatch.setattr(settings, "output_cost_per_million", 2.0)
@@ -24,6 +25,7 @@ def test_live_never_silently_falls_back(monkeypatch):
 
 def test_live_requires_known_prices(configured, monkeypatch):
     monkeypatch.setattr(settings, "output_cost_per_million", None)
+    monkeypatch.setattr(settings, "require_known_prices", True)
     with pytest.raises(ValueError, match="prices"):
         LiveProvider()
 
@@ -62,6 +64,7 @@ def mock_chat(monkeypatch, finding):
 
         def json(self):
             return {
+                "model": settings.model_id,
                 "choices": [{"finish_reason": "stop", "message": {"content": json.dumps({"findings": [finding]})}}],
                 "usage": {"prompt_tokens": 100, "completion_tokens": 50, "total_tokens": 150},
             }

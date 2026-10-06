@@ -19,7 +19,7 @@ def run(tenant):
     observations = []
     configured = settings.mode == "live" and bool(settings.model_key) and all(x is not None for x in (
         settings.input_cost_per_million, settings.output_cost_per_million, settings.embedding_cost_per_million))
-    model = LiveProvider() if configured else None
+    model = LiveProvider(require_chat=False) if configured else None
     budget = Budget(max_tokens=30000, max_tool_calls=30)
     if model:
         index_embeddings(tenant, model, budget)

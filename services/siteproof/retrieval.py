@@ -22,7 +22,7 @@ def reciprocal_rank_fusion(rankings, k=60):
 
 def embedding_identity():
     # Prevent reuse across model revisions or different OpenAI-compatible provider endpoints.
-    endpoint = hashlib.sha256(settings.model_url.rstrip("/").encode()).hexdigest()[:12]
+    endpoint = hashlib.sha256(settings.embedding_endpoint().encode()).hexdigest()[:12]
     return f"{settings.embedding_model}@{settings.embedding_version}:1536:{endpoint}"
 
 
@@ -93,7 +93,17 @@ def rerank(query, chunks):
     ]
 
 
-def retrieve(tenant, query, embedding=None, limit=5, collection="guidance", job_id=None, strategy="hybrid"):
+def retrieve(
+    tenant,
+    query,
+    embedding=None,
+    limit=5,
+    collection="guidance",
+    job_id=None,
+    strategy="hybrid",
+    use_reranker=True,
+    semantic_min_similarity=None,
+):
     if strategy not in ("keyword", "vector", "hybrid"):
         raise ValueError("Unknown retrieval strategy")
     if collection not in ("guidance", "business_facts"):
@@ -116,14 +126,17 @@ def retrieve(tenant, query, embedding=None, limit=5, collection="guidance", job_
             (*args, query, query),
         ).fetchall()
         semantic = []
-        if embedding is not None:
+        if embedding is not None and strategy != "keyword":
             if len(embedding) != 1536 or not all(math.isfinite(x) for x in embedding):
                 raise ValueError("Invalid retrieval embedding")
             semantic = conn.execute(
-                base + " AND c.embedding IS NOT NULL AND c.embedding_model=%s "
+                base.replace("SELECT c.id", "SELECT 1 - (c.embedding <=> %s::vector) AS similarity,c.id")
+                + " AND c.embedding IS NOT NULL AND c.embedding_model=%s "
                 "ORDER BY c.embedding <=> %s::vector,c.id LIMIT 20",
-                (*args, embedding_identity(), str(embedding)),
+                (str(embedding), *args, embedding_identity(), str(embedding)),
             ).fetchall()
+    if semantic_min_similarity is not None:
+        semantic = [row for row in semantic if row["similarity"] >= semantic_min_similarity]
     if strategy == "keyword":
         semantic = []
     elif strategy == "vector":
@@ -135,4 +148,4 @@ def retrieve(tenant, query, embedding=None, limit=5, collection="guidance", job_
         if row["content_hash"] not in seen:
             seen.add(row["content_hash"])
             fused.append(row)
-    return rerank(query, fused)[:limit]
+    return (rerank(query, fused) if use_reranker else fused)[:limit]

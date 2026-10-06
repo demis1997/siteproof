@@ -90,20 +90,17 @@ def create(body: CreateJob, t: str = Depends(tenant), idempotency_key: str = Hea
         raise HTTPException(
             503, detail={"code": "credentials_missing", "message": "SITEPROOF_MODEL_KEY required in live mode"}
         )
-    if settings.mode == "live" and any(
-        price is None
-        for price in (
-            settings.input_cost_per_million,
-            settings.output_cost_per_million,
-            settings.embedding_cost_per_million,
-        )
-    ):
+    if settings.mode == "live" and not settings.embedding_credential():
         raise HTTPException(
             503,
             detail={
-                "code": "pricing_missing",
-                "message": "Configure model and embedding prices before live budgeted jobs",
+                "code": "embedding_credentials_missing",
+                "message": "Set SITEPROOF_EMBEDDING_KEY or explicitly enable SITEPROOF_EMBEDDING_USE_MODEL_CREDENTIALS",
             },
+        )
+    if settings.mode == "live" and settings.require_known_prices and not settings.prices_known():
+        raise HTTPException(
+            503, detail={"code": "pricing_missing", "message": "Monetary policy requires all three prices"}
         )
     try:
         fixture = settings.mode == "fixture" and body.url.startswith("https://fixture.siteproof.test/")
@@ -112,9 +109,16 @@ def create(body: CreateJob, t: str = Depends(tenant), idempotency_key: str = Hea
         raise HTTPException(422, detail={"code": "unsafe_url", "message": str(exc)}) from exc
     identifier = str(uuid.uuid4())
     data = {
+        "validation_session": settings.live_validation_session if settings.mode == "live" else None,
         "goal": body.goal,
         "fixture": settings.mode == "fixture",
-        "budget": {"max_tokens": 12000, "max_tool_calls": 20, "max_seconds": 180, "max_cost": 1, "cost": None},
+        "budget": {
+            "max_tokens": 12000,
+            "max_tool_calls": 20,
+            "max_seconds": 180,
+            "max_cost": 1 if settings.mode != "live" or settings.prices_known() else None,
+            "cost": None,
+        },
         "versions": {"prompt": "auditor-v2", "guidance": "guidance-v1", "renderer": "components-v1"},
     }
     with db.connection() as conn:
@@ -129,6 +133,13 @@ def create(body: CreateJob, t: str = Depends(tenant), idempotency_key: str = Hea
             if existing["submitted_url"] != body.url or existing["data"].get("goal", "") != body.goal:
                 raise HTTPException(409, "Idempotency key already used for another request")
             return existing
+        if settings.mode == "live":
+            from .live_limits import allocate
+
+            try:
+                allocate(t, settings.live_validation_session, "audit")
+            except ValueError as exc:
+                raise HTTPException(409, detail={"code": "validation_budget", "message": str(exc)}) from exc
         payload = {"tenant": t, "job_id": identifier, "action": "audit", "domain": urlsplit(url).hostname}
         conn.execute(
             "INSERT INTO task_outbox(tenant_id,job_id,payload) VALUES(%s,%s,%s)", (t, identifier, Jsonb(payload))

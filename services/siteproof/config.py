@@ -15,6 +15,12 @@ class Settings(BaseSettings):
     model_url: str = "https://api.openai.com/v1"
     model_key: str = ""
     model_id: str = "gpt-4.1-mini"
+    embedding_url: str = ""
+    embedding_key: str = ""
+    embedding_use_model_credentials: bool = False
+    live_validation_session: str = "live-validation-v1"
+    require_known_prices: bool = False
+    usd_per_eur: float | None = Field(default=None, gt=0)
     embedding_version: str = "v1"
     embedding_model: str = "text-embedding-3-small"
     browser_url: str = "http://browser:8081"
@@ -35,6 +41,18 @@ class Settings(BaseSettings):
     rerank_url: str = ""
     rerank_model: str = ""
     rerank_key: str = ""
+
+    def embedding_endpoint(self) -> str:
+        return (self.embedding_url or self.model_url).rstrip("/")
+
+    def embedding_credential(self) -> str:
+        return self.embedding_key or (self.model_key if self.embedding_use_model_credentials else "")
+
+    def prices_known(self) -> bool:
+        return all(
+            value is not None
+            for value in (self.input_cost_per_million, self.output_cost_per_million, self.embedding_cost_per_million)
+        )
 
     def tenant_keys(self) -> dict[str, str]:
         import json

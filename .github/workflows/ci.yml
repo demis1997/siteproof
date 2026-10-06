@@ -106,6 +106,12 @@ jobs:
         run: docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration up --build -d
       - name: Audit and recovery through real stack
         run: python evals/stack_run.py
+      - name: Expanded retrieval and validation preparation (no paid calls)
+        run: |
+          mkdir -p evals/reports/live
+          docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration exec -T -e SITEPROOF_CODE_COMMIT="$GITHUB_SHA" worker python evals/semantic_retrieval_run.py > evals/reports/live/retrieval.json
+          docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration exec -T -e SITEPROOF_CODE_COMMIT="$GITHUB_SHA" worker python evals/live_audit_run.py > evals/reports/live/audit.json
+          docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration exec -T worker python evals/live_limits_checks.py > evals/reports/live/allocation-checks.txt
       - name: Collect diagnostics
         if: always()
         run: docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration logs --no-color > evals/reports/stack-services.log

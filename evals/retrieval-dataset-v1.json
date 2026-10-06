@@ -1,0 +1,393 @@
+{
+  "version": "retrieval-dataset-v1",
+  "corpus_version": "retrieval-corpus-v1",
+  "split_policy": "Fixed authored development/held-out queries. Same corpus; query paraphrase families overlap, so this is not held-out website generalization. No tuning on held-out labels.",
+  "queries": [
+    {
+      "id": "q01",
+      "split": "dev",
+      "query": "How can screen readers identify an unlabeled email input?",
+      "relevance": {
+        "bench-labels-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q02",
+      "split": "dev",
+      "query": "The page is wider than my phone screen.",
+      "relevance": {
+        "bench-overflow-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q03",
+      "split": "dev",
+      "query": "Clicking the displayed number opens the wrong phone destination.",
+      "relevance": {
+        "bench-contacts-v1": 3,
+        "bench-facts-v1": 1
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q04",
+      "split": "dev",
+      "query": "How should a decorative photo be described?",
+      "relevance": {
+        "bench-images-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q05",
+      "split": "dev",
+      "query": "Users need a way to locate the main content region.",
+      "relevance": {
+        "bench-regions-v1": 3,
+        "bench-menus-v1": 1
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q06",
+      "split": "dev",
+      "query": "Moving through the menu without a mouse.",
+      "relevance": {
+        "bench-menus-v1": 3,
+        "bench-focus-v1": 2
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q07",
+      "split": "dev",
+      "query": "A captured price differs between the hero and footer.",
+      "relevance": {
+        "bench-facts-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q08",
+      "split": "dev",
+      "query": "Can a hierarchy change be called a proven sales improvement?",
+      "relevance": {
+        "bench-hypotheses-v1": 3,
+        "bench-compare-v1": 1
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q09",
+      "split": "dev",
+      "query": "A #services link has no matching element.",
+      "relevance": {
+        "bench-links-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q10",
+      "split": "dev",
+      "query": "How do we prevent unknown API prices becoming zero cost?",
+      "relevance": {
+        "bench-budgets-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q11",
+      "split": "dev",
+      "query": "The provider returned but the worker died before saving.",
+      "relevance": {
+        "bench-recovery-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q12",
+      "split": "dev",
+      "query": "A webpage tells the agent to reveal its credentials.",
+      "relevance": {
+        "bench-security-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q13",
+      "split": "dev",
+      "query": "Only mobile rendered before the navigation deadline.",
+      "relevance": {
+        "bench-capture-v1": 3,
+        "bench-compare-v1": 2
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q14",
+      "split": "dev",
+      "query": "A new stock photo must not pretend to show real staff.",
+      "relevance": {
+        "bench-assets-v1": 3,
+        "bench-facts-v1": 1
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q15",
+      "split": "dev",
+      "query": "What is the guaranteed quarterly revenue forecast?",
+      "relevance": {},
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": true
+    },
+    {
+      "id": "q16",
+      "split": "dev",
+      "query": "How should I configure a checkout tax engine?",
+      "relevance": {},
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": true
+    },
+    {
+      "id": "q17",
+      "split": "held_out",
+      "query": "The name of the input is missing from assistive output.",
+      "relevance": {
+        "bench-labels-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q18",
+      "split": "held_out",
+      "query": "A long headline spills sideways on a narrow display.",
+      "relevance": {
+        "bench-overflow-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q19",
+      "split": "held_out",
+      "query": "The mail action differs from the visible mailbox address.",
+      "relevance": {
+        "bench-contacts-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q20",
+      "split": "held_out",
+      "query": "Which description belongs on a clickable icon?",
+      "relevance": {
+        "bench-images-v1": 3,
+        "bench-labels-v1": 1
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q21",
+      "split": "held_out",
+      "query": "Section titles and landmarks should explain content organization.",
+      "relevance": {
+        "bench-regions-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q22",
+      "split": "held_out",
+      "query": "People get stuck when tabbing through navigation.",
+      "relevance": {
+        "bench-focus-v1": 3,
+        "bench-menus-v1": 2
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q23",
+      "split": "held_out",
+      "query": "Source opening hours conflict; which should the system keep?",
+      "relevance": {
+        "bench-facts-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q24",
+      "split": "held_out",
+      "query": "Contact discoverability needs human review, not a conversion promise.",
+      "relevance": {
+        "bench-hypotheses-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q25",
+      "split": "held_out",
+      "query": "A homepage anchor points to a missing section.",
+      "relevance": {
+        "bench-links-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q26",
+      "split": "held_out",
+      "query": "Do query embeddings count toward spending limits?",
+      "relevance": {
+        "bench-budgets-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q27",
+      "split": "held_out",
+      "query": "Should an uncertain model outcome be retried after a crash?",
+      "relevance": {
+        "bench-recovery-v1": 3,
+        "bench-budgets-v1": 1
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q28",
+      "split": "held_out",
+      "query": "Why must subresources avoid the cloud metadata IP?",
+      "relevance": {
+        "bench-security-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q29",
+      "split": "held_out",
+      "query": "A failed tool result cannot count as successful verification.",
+      "relevance": {
+        "bench-capture-v1": 3,
+        "bench-compare-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q30",
+      "split": "held_out",
+      "query": "Remove expired screenshots and checkpoint data privately.",
+      "relevance": {
+        "bench-retention-v1": 3
+      },
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": false
+    },
+    {
+      "id": "q31",
+      "split": "held_out",
+      "query": "How can I scrape prospects and automatically email them?",
+      "relevance": {},
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": true
+    },
+    {
+      "id": "q32",
+      "split": "held_out",
+      "query": "Which cryptocurrency will triple tomorrow?",
+      "relevance": {},
+      "label_rationale": "Direct topic match or explicitly outside homepage auditing scope; grades 3 primary, 2 related, 1 peripheral.",
+      "label_author": "coding-agent",
+      "independent_review": "required",
+      "no_answer": true
+    }
+  ]
+}

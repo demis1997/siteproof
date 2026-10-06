@@ -43,7 +43,8 @@ class Budget(BaseModel):
     max_tokens: int = 12000
     max_tool_calls: int = 20
     max_seconds: int = 180
-    max_cost: float = 1.0
+    max_cost: float | None = Field(default=1.0, ge=0)
+    cost_unknown: bool = False
     tokens: int = 0
     tool_calls: int = 0
     elapsed_seconds: float = 0
@@ -55,11 +56,15 @@ class Budget(BaseModel):
         self.elapsed_seconds = max(self.elapsed_seconds, elapsed)
         self.tokens += tokens
         self.tool_calls += calls
-        if cost is not None:
+        if tokens > 0 and cost is None:
+            self.cost_unknown = True
+        if self.cost_unknown:
+            self.cost = None
+        elif cost is not None:
             self.cost = (self.cost or 0) + cost
         if self.tokens > self.max_tokens or self.tool_calls > self.max_tool_calls or elapsed > self.max_seconds:
             raise ValueError("Budget exceeded")
-        if self.cost is not None and self.cost > self.max_cost:
+        if self.max_cost is not None and self.cost is not None and self.cost > self.max_cost:
             raise ValueError("Money budget exceeded")
 
 

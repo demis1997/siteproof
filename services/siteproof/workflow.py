@@ -12,7 +12,7 @@ from .config import settings
 from .contracts import Budget, PageSpec, preserve_facts
 from .journal import once
 from .providers import provider
-from .retrieval import cached_embedding, index_embeddings, retrieve
+from .retrieval import cached_embedding, embedding_identity, index_embeddings, retrieve
 from .storage import put
 
 
@@ -110,8 +110,9 @@ def auditor(state):
         return state
     db.update_job(state["tenant"], state["job_id"], "capturing")
     job = db.get_job(state["tenant"], state["job_id"])
-    capture = once(state["tenant"], state["job_id"], "capture-v1",
-                   lambda: remote_capture(state, url=job["canonical_url"]))
+    capture = once(
+        state["tenant"], state["job_id"], "capture-v1", lambda: remote_capture(state, url=job["canonical_url"])
+    )
     state["evidence"], state["facts"] = capture["evidence"], capture["facts"]
     if capture.get("canonical_url"):
         with db.connection() as conn:
@@ -126,11 +127,13 @@ def auditor(state):
     budget = Budget.model_validate(state["budget"])
     embedding = None
     if settings.mode == "live":
+
         def persist_embedding(run, usage):
             # Commit each successful embedding call before proceeding to the next remote call.
             with db.locked_job(state["tenant"], state["job_id"]):
-                db.save_records(state["tenant"], state["job_id"], "ModelRun",
-                                [dict(run, id="embedding-" + run["content_hash"])])
+                db.save_records(
+                    state["tenant"], state["job_id"], "ModelRun", [dict(run, id="embedding-" + run["content_hash"])]
+                )
                 db.update_job(state["tenant"], state["job_id"], "auditing", {"budget": usage.model_dump()})
 
         def embed():
@@ -146,12 +149,20 @@ def auditor(state):
     guidance = retrieve(state["tenant"], query, embedding=embedding)
 
     def diagnose():
-        findings, run = model_provider.findings(state["evidence"], guidance, images=capture["screenshots"], budget=budget)
+        findings, run = model_provider.findings(
+            state["evidence"], guidance, images=capture["screenshots"], budget=budget
+        )
         budget.consume(tokens=run["tokens"], cost=run["cost"])
         return {"findings": findings, "run": run, "budget": budget.model_dump()}
 
     diagnosed = once(state["tenant"], state["job_id"], "findings-v2", diagnose, paid=settings.mode == "live")
     findings, run = diagnosed["findings"], diagnosed["run"]
+    run = dict(
+        run,
+        retrieval_strategy="hybrid" if embedding is not None else "keyword",
+        embedding_identity=embedding_identity() if embedding is not None else None,
+        retrieved_guidance_ids=[g["id"] for g in guidance],
+    )
     db.save_records(state["tenant"], state["job_id"], "ModelRun", [dict(run, id="audit-model")])
     # Restore the pre-call budget on replay; charge the persisted result exactly once.
     state["budget"] = diagnosed["budget"]

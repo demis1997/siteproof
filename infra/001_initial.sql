@@ -46,3 +46,12 @@ CREATE TABLE IF NOT EXISTS workflow_steps (
  status text NOT NULL CHECK(status IN ('started','succeeded')), result jsonb,
  updated_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(tenant_id,job_id,step),
  FOREIGN KEY(tenant_id,job_id) REFERENCES audit_jobs(tenant_id,id) ON DELETE CASCADE);
+
+-- Operator-controlled validation ledger; isolated from customer jobs.
+CREATE TABLE IF NOT EXISTS live_validation_sessions (
+  tenant_id text NOT NULL REFERENCES tenants(id),
+  id text NOT NULL,
+  data jsonb NOT NULL DEFAULT '{}',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY(tenant_id,id)
+);

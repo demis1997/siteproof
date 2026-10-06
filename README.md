@@ -46,7 +46,7 @@ For browser evaluation, run the web server and the harness as documented in [eva
 
 ## Live provider configuration
 
-Set `SITEPROOF_MODE=live`, `SITEPROOF_MODEL_KEY`, model/base URL, and the three current input/output/embedding price settings in `.env`. Live mode never substitutes fixture responses. Prices are user-configured estimates, not an invoice; unmeasured costs remain unknown. Structured outputs and screenshot inputs use the official [Chat Completions contract](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create); embeddings use the official [embedding contract](https://developers.openai.com/api/reference/resources/embeddings/methods/create). Changing models requires testing modality support, schema support, embedding dimensions, and the conservative vision-token allowance. See [provider details](docs/PROVIDERS.md).
+Set `SITEPROOF_MODE=live`, `SITEPROOF_MODEL_KEY`, model/base URL, and separate embedding credentials (or explicit confirmed sharing) in `.env`. Configure the three current USD price settings for monetary enforcement; otherwise cost stays unknown with strict token/call limits. Live mode never substitutes fixture responses. Prices are user-configured estimates, not an invoice; unmeasured costs remain unknown. Structured outputs and screenshot inputs use the official [Chat Completions contract](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create); embeddings use the official [embedding contract](https://developers.openai.com/api/reference/resources/embeddings/methods/create). Changing models requires testing modality support, schema support, embedding dimensions, and the conservative vision-token allowance. See [provider details](docs/PROVIDERS.md).
 
 ## Evidence and limits
 
@@ -63,3 +63,7 @@ The final observed check results and remaining integration requirements are reco
 ## Phase 1–2 integration milestone
 
 See [the observed checklist and exact commands](docs/PHASE12.md). The integration profile uses an explicitly enabled HTTP fixture host to exercise real Lighthouse through the isolated proxy. Production/live URL restrictions remain enabled. MinIO now builds a pinned upstream source release because public prebuilt-image pulls returned access denied. Live AI and semantic retrieval results require private credentials and configured prices.
+
+## Live AI and expanded retrieval validation
+
+See [live configuration, budgets and exact commands](docs/LIVE_VALIDATION.md). The separate benchmark has 18 documents and 32 development/held-out queries; author-created labels still require independent human review. Real PostgreSQL keyword results are reported separately from blocked semantic/live checks. No paid calls run without credentials or an explicit operator command.
