@@ -34,15 +34,18 @@ def wait_job(identifier):
 
 def main():
     report = {"mode": "fixture", "samples": [], "live_audit": "UNVERIFIED: credentials not configured"}
+    readiness = "No response"
     for _ in range(120):
         try:
-            if httpx.get(API + "/ready").status_code == 200:
+            response = httpx.get(API + "/ready", timeout=2, trust_env=False)
+            readiness = f"{response.status_code}: {response.text[:200]}"
+            if response.status_code == 200:
                 break
         except httpx.TransportError:
             pass
         time.sleep(1)
     else:
-        raise AssertionError("Stack not ready")
+        raise AssertionError("Stack not ready: " + readiness)
     for slug in ("clean", "overflow", "broken-contact", "missing-labels", "conflicting-facts", "prompt-injection"):
         url = f"http://fixture.siteproof.test/{slug}"
         headers = dict(HEADERS, **{"Idempotency-Key": "integration-" + slug})

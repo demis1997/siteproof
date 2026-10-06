@@ -27,7 +27,7 @@ services:
   api:
     build: {context: .., dockerfile: infra/Dockerfile}
     env_file: ../.env
-    networks: [control]
+    networks: [control, egress]
     ports: ["127.0.0.1:8000:8000"]
     depends_on: {postgres: {condition: service_healthy}, redis: {condition: service_healthy}, init: {condition: service_completed_successfully}}
   worker:
@@ -64,7 +64,7 @@ services:
   web:
     build: {context: .., dockerfile: apps/web/Dockerfile}
     environment: {SITEPROOF_RENDER_KEY: "${SITEPROOF_RENDER_KEY:-local-render-key}", API_INTERNAL_URL: "http://api:8000", SITEPROOF_TENANT_KEY: "${SITEPROOF_TENANT_KEY:-local-development-key}"}
-    networks: [control]
+    networks: [control, egress]
     ports: ["127.0.0.1:3000:3000"]
     depends_on: [api]
 networks:
