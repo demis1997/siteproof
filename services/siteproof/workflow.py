@@ -10,6 +10,7 @@ from . import db
 from .audit import verify
 from .config import settings
 from .contracts import Budget, PageSpec, preserve_facts
+from .journal import once
 from .providers import provider
 from .retrieval import cached_embedding, index_embeddings, retrieve
 from .storage import put
@@ -109,7 +110,8 @@ def auditor(state):
         return state
     db.update_job(state["tenant"], state["job_id"], "capturing")
     job = db.get_job(state["tenant"], state["job_id"])
-    capture = remote_capture(state, url=job["canonical_url"])
+    capture = once(state["tenant"], state["job_id"], "capture-v1",
+                   lambda: remote_capture(state, url=job["canonical_url"]))
     state["evidence"], state["facts"] = capture["evidence"], capture["facts"]
     if capture.get("canonical_url"):
         with db.connection() as conn:
@@ -124,17 +126,32 @@ def auditor(state):
     budget = Budget.model_validate(state["budget"])
     embedding = None
     if settings.mode == "live":
-        index_embeddings(state["tenant"], model_provider, budget)
-        embedding = cached_embedding(state["tenant"], query, model_provider, budget)
-        for embedding_run in model_provider.embedding_runs:
-            db.save_records(
-                state["tenant"], state["job_id"], "ModelRun", [dict(embedding_run, id="embedding-" + str(uuid.uuid4()))]
-            )
+        def embed():
+            index_embeddings(state["tenant"], model_provider, budget)
+            vector = cached_embedding(state["tenant"], query, model_provider, budget)
+            return {"vector": vector, "runs": model_provider.embedding_runs, "budget": budget.model_dump()}
+
+        embedded = once(state["tenant"], state["job_id"], "embeddings-v1", embed, paid=True)
+        embedding = embedded["vector"]
+        budget = Budget.model_validate(embedded["budget"])
+        for index, embedding_run in enumerate(embedded["runs"]):
+            db.save_records(state["tenant"], state["job_id"], "ModelRun",
+                            [dict(embedding_run, id=f"embedding-{index}")])
         state["budget"] = budget.model_dump()
         check(state)
     guidance = retrieve(state["tenant"], query, embedding=embedding)
-    findings, run = model_provider.findings(state["evidence"], guidance, images=capture["screenshots"], budget=budget)
-    record_run(state, run)
+
+    def diagnose():
+        findings, run = model_provider.findings(state["evidence"], guidance, images=capture["screenshots"], budget=budget)
+        return {"findings": findings, "run": run}
+
+    diagnosed = once(state["tenant"], state["job_id"], "findings-v2", diagnose, paid=settings.mode == "live")
+    findings, run = diagnosed["findings"], diagnosed["run"]
+    db.save_records(state["tenant"], state["job_id"], "ModelRun", [dict(run, id="audit-model")])
+    # Restore the pre-call budget on replay; charge the persisted result exactly once.
+    budget.consume(tokens=run["tokens"], cost=run["cost"])
+    state["budget"] = budget.model_dump()
+    check(state)
     state["findings"] = findings
     db.save_records(state["tenant"], state["job_id"], "Finding", findings)
     db.update_job(

@@ -6,7 +6,7 @@ import asyncio
 import socket
 from urllib.parse import urlsplit
 
-from .security import public_address
+from .security import public_address, test_fixture_url
 
 
 async def relay(source, target):
@@ -38,8 +38,11 @@ async def handle(reader, writer):
             port = parsed.port or 80
             if parsed.scheme != "http" or port != 80 or parsed.username is not None or parsed.password is not None:
                 raise ValueError("Unsupported URL")
+        fixture = method != "CONNECT" and test_fixture_url(target)
+        if fixture:
+            host, port = "fixture", 8082
         addresses = await asyncio.get_running_loop().getaddrinfo(host, port, type=socket.SOCK_STREAM)
-        if not addresses or any(not public_address(row[4][0]) for row in addresses):
+        if not addresses or (not fixture and any(not public_address(row[4][0]) for row in addresses)):
             raise ValueError("Non-public destination")
         # Connect literal approved IP, eliminating resolve/connect rebinding gap.
         remote, upstream = await asyncio.wait_for(asyncio.open_connection(addresses[0][4][0], port), 10)

@@ -16,6 +16,21 @@ def public_address(address) -> bool:
     return True
 
 
+def test_fixture_url(url: str) -> bool:
+    from .config import settings
+
+    parsed = urlsplit(url)
+    return (
+        settings.test_fixture_http
+        and settings.mode == "fixture"
+        and parsed.scheme == "http"
+        and parsed.hostname == "fixture.siteproof.test"
+        and parsed.port in (None, 80)
+        and parsed.username is None
+        and parsed.password is None
+    )
+
+
 def validate_url(url: str, resolve=True) -> str:
     try:
         if any(ord(char) <= 32 or ord(char) == 127 for char in url):
@@ -37,9 +52,9 @@ def validate_url(url: str, resolve=True) -> str:
             addresses = [ipaddress.ip_address(host)]
         except ValueError:
             addresses = []
-            if resolve:
+            if resolve and not test_fixture_url(url):
                 addresses = [ipaddress.ip_address(row[4][0]) for row in socket.getaddrinfo(host, parsed.port or 443)]
-        if (resolve and not addresses) or any(not public_address(address) for address in addresses):
+        if (resolve and not addresses and not test_fixture_url(url)) or any(not public_address(address) for address in addresses):
             raise ValueError("Non-public destination is forbidden")
         return urlunsplit((parsed.scheme, parsed.netloc.lower(), parsed.path or "/", parsed.query, ""))
     except (OSError, ValueError) as exc:

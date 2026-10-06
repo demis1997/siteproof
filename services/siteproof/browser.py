@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 from .capture import capture
 from .config import settings
-from .security import validate_url
+from .security import test_fixture_url, validate_url
 
 app = FastAPI()
 semaphore = threading.BoundedSemaphore(1)
@@ -37,6 +37,9 @@ def run(request: Request, x_browser_key: str = Header("")):
             raise HTTPException(413, "Preview too large")
         with slot():
             return capture(html=request.html)
+    if request.url and test_fixture_url(request.url):
+        with slot():
+            return capture(url=validate_url(request.url))
     if settings.mode == "fixture" and request.url and request.url.startswith("https://fixture.siteproof.test/"):
         name = request.url.rstrip("/").split("/")[-1]
         if name not in (

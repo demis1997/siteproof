@@ -17,7 +17,7 @@ FastAPI publishes generated OpenAPI at `/docs`. The local API requires `X-Tenant
 
 Errors use HTTP 401 for missing authentication, 404 for absent owned resources, 409 for invalid stage transitions or unsafe acceptance, and 422 for invalid input. Some legacy errors use string details while security and credential failures include `{code,message}`; consumers should display either form. An API response does not prove a workflow or external integration completed.
 
-Fact correction and persistent retention deletion are not yet API features. Do not represent input approval as an edit capability.
+`POST /api/jobs/{id}/facts/{fact_id}/correct` accepts `{value,reason}` during review, records the original value and user correction, and invalidates prior verification. Corrections persist in PostgreSQL.
 
 `DELETE /api/jobs/{id}` deletes an inactive tenant-owned job, artifacts, retrieval facts and checkpoints; active/busy jobs return 409. See the retention command and limitations in `SECURITY.md`.
 

@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://siteproof:siteproof@postgres:5432/siteproof"
     redis_url: str = "redis://redis:6379/0"
     tenant_keys_json: str = ""
+    test_fixture_http: bool = False
     browser_key: str = "local-browser-key"
     tenant_key: str = "local-development-key"
     artifact_secret: str = "change-this-local-artifact-secret"

@@ -38,7 +38,7 @@ services:
     depends_on: {postgres: {condition: service_healthy}, redis: {condition: service_healthy}, init: {condition: service_completed_successfully}, browser: {condition: service_started}}
   browser:
     build: {context: .., dockerfile: infra/Dockerfile.browser}
-    environment: {SITEPROOF_MODE: "${SITEPROOF_MODE:-fixture}", SITEPROOF_BROWSER_KEY: "${SITEPROOF_BROWSER_KEY:-local-browser-key}"}
+    environment: {SITEPROOF_MODE: "${SITEPROOF_MODE:-fixture}", SITEPROOF_BROWSER_KEY: "${SITEPROOF_BROWSER_KEY:-local-browser-key}", SITEPROOF_TEST_FIXTURE_HTTP: "${SITEPROOF_TEST_FIXTURE_HTTP:-false}"}
     networks: [browser]
     read_only: true
     tmpfs: ["/tmp:size=512m,mode=1777"]
@@ -49,10 +49,18 @@ services:
     pids_limit: 200
   proxy:
     build: {context: .., dockerfile: infra/Dockerfile}
+    environment: {SITEPROOF_MODE: "${SITEPROOF_MODE:-fixture}", SITEPROOF_TEST_FIXTURE_HTTP: "${SITEPROOF_TEST_FIXTURE_HTTP:-false}"}
     command: [python, -m, siteproof.proxy]
     networks: [browser, egress]
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
+  fixture:
+    profiles: [integration]
+    build: {context: .., dockerfile: infra/Dockerfile}
+    command: [python, -m, siteproof.fixture_server]
+    networks: [browser]
+    read_only: true
+    cap_drop: [ALL]
   web:
     build: {context: .., dockerfile: apps/web/Dockerfile}
     environment: {SITEPROOF_RENDER_KEY: "${SITEPROOF_RENDER_KEY:-local-render-key}", API_INTERNAL_URL: "http://api:8000", SITEPROOF_TENANT_KEY: "${SITEPROOF_TENANT_KEY:-local-development-key}"}

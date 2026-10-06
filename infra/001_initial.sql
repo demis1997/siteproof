@@ -41,3 +41,8 @@ CREATE TABLE IF NOT EXISTS task_outbox (
  id bigserial PRIMARY KEY, tenant_id text NOT NULL REFERENCES tenants(id), job_id text NOT NULL,
  payload jsonb NOT NULL, created_at timestamptz NOT NULL DEFAULT now(), dispatched_at timestamptz,
  FOREIGN KEY(tenant_id,job_id) REFERENCES audit_jobs(tenant_id,id) ON DELETE CASCADE);
+CREATE TABLE IF NOT EXISTS workflow_steps (
+ tenant_id text NOT NULL, job_id text NOT NULL, step text NOT NULL,
+ status text NOT NULL CHECK(status IN ('started','succeeded')), result jsonb,
+ updated_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(tenant_id,job_id,step),
+ FOREIGN KEY(tenant_id,job_id) REFERENCES audit_jobs(tenant_id,id) ON DELETE CASCADE);

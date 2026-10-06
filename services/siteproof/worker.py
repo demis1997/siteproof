@@ -49,7 +49,10 @@ def main():
     queue = redis.Redis.from_url(settings.redis_url, decode_responses=True)
     # Requeue jobs interrupted during worker termination using durable processing list.
     while item := queue.rpoplpush("siteproof:processing", "siteproof:queue"):
-        logger.info(json.dumps({"event": "recover", "task": item}))
+        task = json.loads(item)
+        # Single-host worker owns the processing list; its predecessor is no longer running.
+        queue.delete("siteproof:domain:" + task.get("domain", "fixture"), "siteproof:tenant:" + task["tenant"])
+        logger.info(json.dumps({"event": "recover", "job_id": task["job_id"]}))
     while True:
         try:
             dispatch_outbox(queue)
