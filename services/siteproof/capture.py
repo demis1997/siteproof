@@ -279,17 +279,24 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
                                     "id": "lighthouse-" + viewport,
                                     "kind": "lighthouse",
                                     "viewport": viewport,
+                                    "tool_version": lighthouse.get("lighthouseVersion"),
                                     "categories": lighthouse.get("categories"),
                                     "audits": lighthouse.get("audits"),
                                 }
                             )
-                    except (OSError, subprocess.SubprocessError):
+                    except (OSError, subprocess.SubprocessError) as exc:
+                        diagnostic = getattr(exc, "stderr", b"") or b""
+                        if isinstance(diagnostic, bytes):
+                            diagnostic = diagnostic.decode(errors="replace")
                         evidence.append(
                             {
                                 "id": "lighthouse-" + viewport,
                                 "kind": "unavailable",
                                 "name": "lighthouse",
+                                "viewport": viewport,
                                 "reason": "Measurement failed or timed out",
+                                "error_type": type(exc).__name__,
+                                "detail": diagnostic[-1200:],
                             }
                         )
                 else:

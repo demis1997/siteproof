@@ -313,6 +313,10 @@ def run_job(tenant, job_id, action="audit"):
         if snapshot.values and not snapshot.next:
             return  # Duplicate queue delivery of a completed graph, no repeated paid calls.
         budget = Budget.model_validate(job["data"].get("budget", {}))
+        if snapshot.next:
+            # Substeps commit usage inside the Auditor node, before the node checkpoint exists.
+            # Restore the authoritative durable budget rather than replaying its older checkpoint value.
+            graph.update_state(config, {"budget": budget.model_dump()})
         initial = (
             None
             if snapshot.next

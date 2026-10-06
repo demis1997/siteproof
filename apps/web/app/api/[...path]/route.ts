@@ -1,7 +1,8 @@
+import { isSameOrigin } from '@/lib/origin';
 import { backend } from '@/lib/api';
 import type { NextRequest } from 'next/server';
 async function proxy(request: NextRequest, {params}: {params: Promise<{path:string[]}>}) {
-  if (!['GET','HEAD'].includes(request.method) && request.headers.get('origin') !== request.nextUrl.origin) return Response.json({detail:'Cross-origin writes are forbidden.'},{status:403});
+  if (!['GET','HEAD'].includes(request.method) && !isSameOrigin(request)) return Response.json({detail:'Cross-origin writes are forbidden.'},{status:403});
   const {path} = await params;
   if (!['jobs','artifacts'].includes(path[0])) return Response.json({detail:'Unknown endpoint'},{status:404});
   const headers = new Headers();

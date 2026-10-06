@@ -37,6 +37,7 @@ services:
     networks: [control, browser, egress]
     depends_on: {postgres: {condition: service_healthy}, redis: {condition: service_healthy}, init: {condition: service_completed_successfully}, browser: {condition: service_started}}
   browser:
+    init: true
     build: {context: .., dockerfile: infra/Dockerfile.browser}
     environment: {SITEPROOF_MODE: "${SITEPROOF_MODE:-fixture}", SITEPROOF_BROWSER_KEY: "${SITEPROOF_BROWSER_KEY:-local-browser-key}", SITEPROOF_TEST_FIXTURE_HTTP: "${SITEPROOF_TEST_FIXTURE_HTTP:-false}"}
     networks: [browser]
@@ -63,7 +64,7 @@ services:
     cap_drop: [ALL]
   web:
     build: {context: .., dockerfile: apps/web/Dockerfile}
-    environment: {SITEPROOF_RENDER_KEY: "${SITEPROOF_RENDER_KEY:-local-render-key}", API_INTERNAL_URL: "http://api:8000", SITEPROOF_TENANT_KEY: "${SITEPROOF_TENANT_KEY:-local-development-key}"}
+    environment: {SITEPROOF_RENDER_KEY: "${SITEPROOF_RENDER_KEY:-local-render-key}", API_INTERNAL_URL: "http://api:8000", SITEPROOF_PUBLIC_ORIGIN: "${SITEPROOF_PUBLIC_ORIGIN:-}", SITEPROOF_TENANT_KEY: "${SITEPROOF_TENANT_KEY:-local-development-key}"}
     networks: [control, egress]
     ports: ["127.0.0.1:3000:3000"]
     depends_on: [api]

@@ -70,7 +70,7 @@ def main():
         assert len(ids) == len(evidence)
         for viewport in ("desktop", "mobile"):
             assert any(e["kind"] == "dom" and e["viewport"] == viewport for e in evidence)
-            assert any(e["kind"] == "lighthouse" and e["viewport"] == viewport for e in evidence), evidence
+            assert any(e["kind"] == "lighthouse" and e["viewport"] == viewport for e in evidence), [e for e in evidence if e["kind"] == "unavailable"]
             assert any(e.get("name") == "axe" and e["viewport"] == viewport for e in evidence)
             shot = next(e for e in evidence if e["kind"] == "screenshot" and e["viewport"] == viewport)
             image = httpx.get(API + shot["artifact_url"], headers=HEADERS)
@@ -127,6 +127,7 @@ def main():
     report["database_checks"] = compose("exec", "-T", "worker", "python", "evals/db_checks.py", "integration", identifier)
     request("DELETE", f"/api/jobs/{identifier}")
     assert httpx.get(API + f"/api/jobs/{identifier}", headers=HEADERS).status_code == 404
+    report["deletion_checks"] = compose("exec", "-T", "worker", "python", "evals/deletion_checks.py", "integration", identifier)
     retrieval = compose("exec", "-T", "worker", "python", "evals/postgres_retrieval_run.py", "--tenant", "integration")
     Path("evals/reports/stack/retrieval.json").write_text(retrieval)
     report["checks"] = ["real axe/Lighthouse", "authenticated PNG retrieval", "idempotency", "worker kill/restart", "persisted correction", "duplicate delivery", "tenant denial", "UI images and evidence navigation", "job deletion"]
