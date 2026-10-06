@@ -1,0 +1,11 @@
+# Upstream community images are no longer publicly pullable. Build the pinned source release.
+FROM golang:1.26-bookworm AS build
+WORKDIR /src
+RUN git clone --depth 1 --branch RELEASE.2025-09-06T17-38-46Z https://github.com/minio/minio.git . \
+    && test "$(git rev-parse HEAD)" = d0f50cdd9b0efa55b7b9fba91706615aa0416c88 \
+    && CGO_ENABLED=0 go build -trimpath -o /minio .
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=build /minio /usr/local/bin/minio
+ENTRYPOINT ["minio"]

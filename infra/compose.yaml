@@ -13,7 +13,7 @@ services:
     networks: [control]
     healthcheck: {test: [CMD, redis-cli, ping], interval: 5s, timeout: 3s, retries: 20}
   minio:
-    image: quay.io/minio/minio:RELEASE.2025-09-06T17-38-46Z
+    build: {context: .., dockerfile: infra/Dockerfile.minio}
     command: [server, /data, --console-address, ":9001"]
     environment: {MINIO_ROOT_USER: minioadmin, MINIO_ROOT_PASSWORD: minioadmin}
     volumes: ["objects:/data"]

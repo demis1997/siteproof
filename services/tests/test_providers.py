@@ -116,3 +116,11 @@ def test_model_objective_defect_requires_measurement(configured, monkeypatch):
     mock_chat(monkeypatch, finding(kind="objective_defect"))
     with pytest.raises(ValueError, match="no executable defect"):
         LiveProvider().findings([{"id": "real", "kind": "dom"}], [])
+
+
+def test_model_cannot_cite_nonexistent_guidance(configured, monkeypatch):
+    raw = finding()
+    raw["guidance_ids"] = ["invented-source"]
+    mock_chat(monkeypatch, raw)
+    with pytest.raises(ValueError, match="nonexistent guidance"):
+        LiveProvider().findings([{"id": "real", "kind": "dom"}], [{"id": "real-source"}])

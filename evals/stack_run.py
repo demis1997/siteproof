@@ -107,6 +107,7 @@ def main():
         page.screenshot(path="evals/reports/stack/dashboard.png", full_page=True)
         browser.close()
     identifier = report["samples"][0]["job_id"]
+    report["database_checks"] = compose("exec", "-T", "worker", "python", "evals/db_checks.py", "integration", identifier)
     request("DELETE", f"/api/jobs/{identifier}")
     assert httpx.get(API + f"/api/jobs/{identifier}", headers=HEADERS).status_code == 404
     retrieval = compose("exec", "-T", "worker", "python", "evals/postgres_retrieval_run.py", "--tenant", "integration")
