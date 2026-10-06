@@ -53,3 +53,7 @@ Final code CI: [run 37469005781](https://github.com/demis1997/siteproof/actions/
 ## Live-validation follow-up
 
 See `docs/LIVE_VALIDATION.md` and `evals/reports/live` for the subsequent credential-blocked milestone. Local tests increased to 109 and existing real-stack fixture regression passed again. The expanded real PostgreSQL benchmark has 18 documents and 32 queries; semantic metrics remain null. The held-out keyword no-answer false-answer rate is 0.50 (two examples), so raw retrieval is not calibrated abstention. No live audit/embedding call, independent relevance review, or live human design rating was performed. The new live-mode badge is implemented/build-checked but has not been inspected on a real live result.
+
+## Phase 3–4 update
+
+Current fixture-stack results and blocked live checks are tracked in [PHASE34.md](PHASE34.md) and `evals/reports/phase34`. The OpenAI balance is zero; all paid requests are stopped. Earlier statements about missing credentials refer to the historical milestone, not the current private configuration.

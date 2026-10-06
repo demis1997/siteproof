@@ -1,0 +1,12 @@
+{
+  "mode": "fixture",
+  "job_id": "26d29a2e-3896-4fc2-80ac-9ebcf9793fe1",
+  "status": "PASS",
+  "interrupted_stage": "verifying",
+  "persistent_checkpoints": true,
+  "unique_evidence_count": 40,
+  "verification_count": 1,
+  "event_count": 6,
+  "human_accepted": false,
+  "boundary": "Actual worker SIGKILL during deterministic preview capture; no paid requests or simulated recovery."
+}

@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Finding(BaseModel):
@@ -28,14 +28,15 @@ class BusinessFact(BaseModel):
 
 
 class PageSpec(BaseModel):
-    title: str
+    model_config = ConfigDict(extra="forbid")
+    title: str = Field(max_length=2000)
     layout: Literal["editorial", "classic", "compact"] = "editorial"
     typography: Literal["sans", "serif"] = "sans"
-    headline: str
-    about: str
-    services: list[str]
-    details: list[str] = []
-    contacts: list[dict[str, str]]
+    headline: str = Field(max_length=2000)
+    about: str = Field(max_length=10000)
+    services: list[str] = Field(max_length=100)
+    details: list[str] = Field(default_factory=list, max_length=100)
+    contacts: list[dict[str, str]] = Field(max_length=30)
     fixture: bool
 
 

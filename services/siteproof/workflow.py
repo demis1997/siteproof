@@ -1,8 +1,10 @@
+import logging
 import time
 import uuid
 from typing import TypedDict
 
 import httpx
+import psycopg
 from langgraph.checkpoint.postgres import PostgresSaver
 from langgraph.graph import END, START, StateGraph
 
@@ -32,6 +34,18 @@ class State(TypedDict, total=False):
     started: float
     prior_elapsed: float
     budget: dict
+    images: list[dict]
+    guidance: list[dict]
+
+
+def restore_usage(state, saved):
+    current = Budget.model_validate(state.get("budget", {}))
+    restored = Budget.model_validate(saved)
+    for field in ("tokens", "tool_calls", "elapsed_seconds"):
+        setattr(restored, field, max(getattr(current, field), getattr(restored, field)))
+    restored.cost_unknown |= current.cost_unknown
+    restored.cost = None if restored.cost_unknown else max(current.cost or 0, restored.cost or 0) if current.cost is not None or restored.cost is not None else None
+    state["budget"] = restored.model_dump()
 
 
 def check(state):
@@ -107,6 +121,10 @@ def auditor(state):
         ]
         state["findings"] = db.records(state["tenant"], state["job_id"], "Finding")
         state["facts"] = db.records(state["tenant"], state["job_id"], "BusinessFact")
+        state["guidance"] = db.get_job(state["tenant"], state["job_id"])["data"].get("guidance_snapshot", [])
+        with db.connection() as conn:
+            row = conn.execute("SELECT result FROM workflow_steps WHERE tenant_id=%s AND job_id=%s AND step='capture-v1' AND status='succeeded'", (state["tenant"], state["job_id"])).fetchone()
+        state["images"] = row["result"]["screenshots"] if row else []
         return state
     db.update_job(state["tenant"], state["job_id"], "capturing")
     job = db.get_job(state["tenant"], state["job_id"])
@@ -166,7 +184,7 @@ def auditor(state):
     )
     db.save_records(state["tenant"], state["job_id"], "ModelRun", [dict(run, id="audit-model")])
     # Restore the pre-call budget on replay; charge the persisted result exactly once.
-    state["budget"] = diagnosed["budget"]
+    restore_usage(state, diagnosed["budget"])
     check(state)
     state["findings"] = findings
     db.save_records(state["tenant"], state["job_id"], "Finding", findings)
@@ -178,7 +196,7 @@ def auditor(state):
             "fixture": settings.mode == "fixture",
             "guidance_ids": [g["id"] for g in guidance],
             "guidance_snapshot": guidance,
-            "versions": {"prompt": "auditor-v2", "guidance": "guidance-v1", "renderer": "components-v1"},
+            "versions": {"prompt": "auditor-v2", "guidance": "guidance-v1", "renderer": "components-v2"},
             "elapsed_seconds": state["budget"].get("elapsed_seconds"),
             "budget": state["budget"],
         },
@@ -204,12 +222,16 @@ def render_spec(state):
         "Redesign",
         [
             {
-                "id": "redesign",
+                "id": f"redesign-{state.get('revision', 0)}-{state.get('repair_attempts', 0)}",
                 "spec": state["spec"],
                 "html": state["html"],
-                "version": "components-v1",
+                "version": "components-v2",
                 "revision": state.get("revision", 0),
                 "repair_attempts": state.get("repair_attempts", 0),
+                "targeted_finding_ids": [f["id"] for f in state["findings"] if f.get("approved")],
+                "guidance_ids": db.get_job(state["tenant"], state["job_id"])["data"].get("guidance_ids", []),
+                "missing_content": [name for name, missing in [("services", not state["spec"]["services"]), ("contacts", not state["spec"]["contacts"])] if missing],
+                "design_decisions": [{"finding_id": f["id"], "proposed_change": f["proposed_change"], "verification_method": f["verification_method"], "selected_layout": state["spec"]["layout"], "outcome": "Requires executable verification or human review"} for f in state["findings"] if f.get("approved")],
             }
         ],
     )
@@ -234,20 +256,24 @@ def designer(state):
     spec = PageSpec(
         title=dom.get("title", "Business homepage"),
         headline=headings[0] if headings else "Contact our business",
-        about=" ".join(headings[1:3]) or "Contact us to discuss the services listed on our original website.",
+        about=" ".join(p["text"] for p in dom.get("about", [])) or "Contact us to discuss the services listed on our original website.",
         services=[f["value"] for f in state["facts"] if f["kind"] == "service"],
         details=[f["value"] for f in state["facts"] if f["kind"] in ("hours", "price")],
         contacts=contacts,
         fixture=settings.mode == "fixture",
     )
     if settings.mode == "live":
-        spec, run = provider().design(
-            spec,
-            state["facts"],
-            [f for f in state["findings"] if f.get("approved")],
-            Budget.model_validate(state["budget"]),
-        )
-        record_run(state, run)
+        def design_once():
+            usage = Budget.model_validate(state["budget"])
+            result, run = provider().design(spec, state["facts"], [f for f in state["findings"] if f.get("approved")], usage, guidance=state.get("guidance", []), images=state.get("images", []))
+            usage.consume(tokens=run["tokens"], cost=run["cost"])
+            return {"spec": result.model_dump(), "run": run, "budget": usage.model_dump()}
+
+        designed = once(state["tenant"], state["job_id"], f"design-v2-{state.get('revision', 0)}", design_once, paid=True)
+        spec = PageSpec.model_validate(designed["spec"])
+        db.save_records(state["tenant"], state["job_id"], "ModelRun", [dict(designed["run"], id=f"design-model-{state.get('revision', 0)}")])
+        restore_usage(state, designed["budget"])
+        check(state)
     state["spec"] = spec.model_dump()
     render_spec(state)
     return state
@@ -262,7 +288,9 @@ def verifier(state):
         state["repair_attempts"] = attempt
         check(state)
         prefix = f"after-{state.get('revision', 0)}-{attempt}-"
-        capture = remote_capture(state, html=state["html"], prefix=prefix)
+        captured = once(state["tenant"], state["job_id"], f"verify-capture-{prefix}", lambda prefix=prefix: {"capture": remote_capture(state, html=state["html"], prefix=prefix), "budget": state["budget"]})
+        capture = captured["capture"]
+        restore_usage(state, captured["budget"])
         state["after"] = capture["evidence"]
         result = verify(
             [f for f in state["findings"] if f.get("approved")],
@@ -270,8 +298,9 @@ def verifier(state):
             state["after"],
             state["facts"],
             state["spec"],
+            require_lighthouse=True,
         )
-        result.update(id="verification", repair_attempts=attempt, revision=state.get("revision", 0))
+        result.update(id=f"verification-{state.get('revision', 0)}-{attempt}", repair_attempts=attempt, revision=state.get("revision", 0), layout=state["spec"]["layout"])
         state["verification"] = result
         db.save_records(state["tenant"], state["job_id"], "VerificationResult", [result])
         if result["required_checks_passed"] or attempt == 2:
@@ -284,6 +313,7 @@ def verifier(state):
         if state["spec"]["layout"] == next_layout:
             break
         state["spec"]["layout"] = next_layout
+        state["repair_attempts"] = attempt + 1
         render_spec(state)
     check(state)
     db.update_job(
@@ -300,11 +330,32 @@ def verifier(state):
     return state
 
 
+def traced_node(name, operation):
+    def invoke(state: State) -> State:
+        started = time.monotonic()
+        event = {"id": f"trace-{name}-{state.get('revision', 0)}-{uuid.uuid4()}", "stage": name, "job_id": state["job_id"], "tenant_id": state["tenant"], "revision": state.get("revision", 0)}
+        try:
+            result = operation(state)
+            event["status"] = "succeeded"
+            return result
+        except Exception as exc:
+            event.update(status="failed", error_type=type(exc).__name__)
+            raise
+        finally:
+            event["duration_ms"] = round((time.monotonic()-started)*1000)
+            try:
+                db.save_records(state["tenant"], state["job_id"], "TraceEvent", [event])
+            except psycopg.Error as trace_error:
+                event["trace_persistence_error"] = type(trace_error).__name__
+            logging.getLogger(__name__).info(__import__("json").dumps(event))
+    return invoke
+
+
 def build_graph(checkpointer=None):
     graph = StateGraph(State)
-    graph.add_node("auditor", auditor)
-    graph.add_node("designer", designer)
-    graph.add_node("verifier", verifier)
+    graph.add_node("auditor", traced_node("auditor", auditor))
+    graph.add_node("designer", traced_node("designer", designer))
+    graph.add_node("verifier", traced_node("verifier", verifier))
     graph.add_edge(START, "auditor")
     graph.add_edge("auditor", "designer")
     graph.add_edge("designer", "verifier")
@@ -322,13 +373,19 @@ def run_job(tenant, job_id, action="audit"):
         graph = build_graph(saver)
         config = {"configurable": {"thread_id": f"{tenant}:{job_id}:{action}:{revision}"}}
         snapshot = graph.get_state(config)
+        if snapshot.values and not snapshot.next and action == "redesign" and job["stage"] == "verifying":
+            # Recover a pending verifier even if a legacy state refresh advanced its edge.
+            # Successful verification commits needs_review before the graph finishes.
+            graph.update_state(config, {}, as_node="designer")
+            snapshot = graph.get_state(config)
         if snapshot.values and not snapshot.next:
             return  # Duplicate queue delivery of a completed graph, no repeated paid calls.
         budget = Budget.model_validate(job["data"].get("budget", {}))
         if snapshot.next:
             # Substeps commit usage inside the Auditor node, before the node checkpoint exists.
             # Restore the authoritative durable budget rather than replaying its older checkpoint value.
-            graph.update_state(config, {"budget": budget.model_dump()})
+            predecessor = {"auditor": START, "designer": "auditor", "verifier": "designer"}[snapshot.next[0]]
+            graph.update_state(config, {"budget": budget.model_dump(), "started": time.time(), "prior_elapsed": budget.elapsed_seconds}, as_node=predecessor)
         initial = (
             None
             if snapshot.next

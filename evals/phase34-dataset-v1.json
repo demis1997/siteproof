@@ -1,0 +1,183 @@
+{
+  "version": "phase34-fixtures-v1",
+  "split_policy": "All Harbor Plumbing variants remain held-out together, unchanged. Maple and Cedar variants are development-only; no website group crosses splits.",
+  "held_out_labels_sha256": "2c44ba8b30858663bfa7617228c788c402a48f6fd2962a80c5aa3b9b2bdc5748",
+  "fixtures": [
+    {
+      "id": "maple_cleaning_clean",
+      "website_group": "maple-cleaning",
+      "split": "dev",
+      "objective_labels": [],
+      "critical_facts": {
+        "phone": "+1 202 555 0177",
+        "email": "maple@example.test"
+      },
+      "label_method": "Coding-agent authored/source inspected. Independent human review pending."
+    },
+    {
+      "id": "maple_cleaning_overflow",
+      "website_group": "maple-cleaning",
+      "split": "dev",
+      "objective_labels": [
+        "horizontal_overflow"
+      ],
+      "critical_facts": {
+        "phone": "+1 202 555 0177",
+        "email": "maple@example.test"
+      },
+      "label_method": "Coding-agent authored/source inspected. Independent human review pending."
+    },
+    {
+      "id": "cedar_electric_clean",
+      "website_group": "cedar-electric",
+      "split": "dev",
+      "objective_labels": [],
+      "critical_facts": {
+        "phone": "+1 202 555 0188",
+        "email": "cedar@example.test"
+      },
+      "label_method": "Coding-agent authored/source inspected. Independent human review pending."
+    },
+    {
+      "id": "cedar_electric_overflow",
+      "website_group": "cedar-electric",
+      "split": "dev",
+      "objective_labels": [
+        "horizontal_overflow"
+      ],
+      "critical_facts": {
+        "phone": "+1 202 555 0188",
+        "email": "cedar@example.test"
+      },
+      "label_method": "Coding-agent authored/source inspected. Independent human review pending."
+    },
+    {
+      "id": "clean",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [],
+      "human_review_labels": [],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "overflow",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [
+        "horizontal_overflow"
+      ],
+      "human_review_labels": [],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "broken_contact",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [
+        "invalid_phone_link",
+        "invalid_email_link"
+      ],
+      "human_review_labels": [],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "missing_labels",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [
+        "missing_accessible_label"
+      ],
+      "human_review_labels": [],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "weak_navigation",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [],
+      "human_review_labels": [
+        "unclear_navigation"
+      ],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "conflicting_facts",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [],
+      "human_review_labels": [
+        "conflicting_business_facts"
+      ],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "prompt_injection",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [],
+      "human_review_labels": [],
+      "expected_capture": "complete",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "partial_capture",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [],
+      "human_review_labels": [],
+      "expected_capture": "partial",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    },
+    {
+      "id": "timeout",
+      "website_group": "harbor-plumbing",
+      "split": "test",
+      "objective_labels": [],
+      "human_review_labels": [],
+      "expected_capture": "timeout",
+      "critical_facts": {
+        "phone": "+1 202 555 0123",
+        "email": "hello@example.test"
+      },
+      "label_method": "Authored and source-inspected; browser confirmation pending; hypotheses are human review targets."
+    }
+  ]
+}

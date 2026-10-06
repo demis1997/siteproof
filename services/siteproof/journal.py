@@ -23,8 +23,8 @@ def once(tenant, job_id, step, operation, *, paid=False):
     try:
         result = operation()
     except httpx.HTTPStatusError as exc:
-        # A provider's explicit rate-limit rejection is safe to retry. Transport failures remain uncertain.
-        if exc.response.status_code == 429:
+        # Only deterministic browser backpressure may replay automatically. Preserve paid-call guards.
+        if not paid and exc.response.status_code == 429:
             with connection() as conn:
                 conn.execute("DELETE FROM workflow_steps WHERE tenant_id=%s AND job_id=%s AND step=%s",
                              (tenant, job_id, step))

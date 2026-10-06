@@ -52,7 +52,7 @@ Set `SITEPROOF_MODE=live`, `SITEPROOF_MODEL_KEY`, model/base URL, and separate e
 
 DOM selectors, actual axe violations, viewport checks and Lighthouse results retain stable evidence IDs. Model findings referencing unknown IDs are rejected. All original content is treated as untrusted data. Contact facts retain source/capture provenance; candidate services and conflicting details need human approval. Only approved components render generated specifications, and the exact rendered HTML is captured and shown privately.
 
-Lighthouse is currently unavailable for inline private previews; this limitation is reported, not assigned a fake score. Automated testing does not establish WCAG compliance. Link checks cover homepage fragment targets only; other pages are outside this job's scope. No load testing, real-client conversion experiment, or independent human design study has been performed.
+Private previews now receive two real Lighthouse measurements at each documented viewport through an ephemeral isolated document capability. Automated testing does not establish WCAG compliance. Link checks cover homepage fragment targets only; other pages are outside this job's scope. A three-job fixture-provider load test is recorded separately; no real-client conversion experiment or independent human design study has been performed.
 
 See [API](docs/API.md), [security boundaries](docs/SECURITY.md), [deployment](docs/DEPLOYMENT.md), [baseline limitations](docs/BASELINES.md), and [demo/resume templates](docs/DEMO.md). Actual measured static-fixture results are in [the contract report](evals/reports/report.md). The historical host-browser failure report records an earlier sandbox limitation; subsequent real Docker capture and UI checks are tracked in [Phase 1–2 validation](docs/PHASE12.md).
 
@@ -67,3 +67,7 @@ See [the observed checklist and exact commands](docs/PHASE12.md). The integratio
 ## Live AI and expanded retrieval validation
 
 See [live configuration, budgets and exact commands](docs/LIVE_VALIDATION.md). The separate benchmark has 18 documents and 32 development/held-out queries; author-created labels still require independent human review. Real PostgreSQL keyword results are reported separately from blocked semantic/live checks. No paid calls run without credentials or an explicit operator command.
+
+## Phase 3–4 fixture verification
+
+See [implementation, exact commands, dataset and limitations](docs/PHASE34.md). The real-stack fixture pipeline covers redesign capture, before/after Lighthouse and axe, regression rejection, bounded repairs and private review controls. Live model quality, semantic retrieval and actual inference costs are BLOCKED while the OpenAI balance is zero. No paid requests will be retried.

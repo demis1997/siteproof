@@ -89,7 +89,7 @@ jobs:
           path: evals/reports/browser
   real-stack:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -106,6 +106,13 @@ jobs:
         run: docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration up --build -d
       - name: Audit and recovery through real stack
         run: python evals/stack_run.py
+      - name: Phase 3-4 fixture pipeline, repair and load gates
+        run: |
+          python evals/phase34_run.py
+          python evals/regression_gate.py
+          python evals/phase34_recovery.py
+          python evals/phase34_ui_run.py
+          python evals/write_phase34_report.py
       - name: Expanded retrieval and validation preparation (no paid calls)
         run: |
           mkdir -p evals/reports/live

@@ -1,0 +1,15 @@
+{
+  "job_id": "00be016b-0eae-4069-9c82-2826c65fc933",
+  "mode": "fixture",
+  "status": "PASS",
+  "checks": [
+    "real four-image before/after comparison",
+    "persistent fixture label",
+    "repair-history view",
+    "accepted job cannot be accepted again",
+    "authenticated noindex document",
+    "script-free iframe",
+    "functional contact scheme"
+  ],
+  "human_quality_review": "pending"
+}

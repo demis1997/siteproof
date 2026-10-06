@@ -1,6 +1,6 @@
 # Live AI and semantic retrieval validation
 
-The verified fixture milestone is preserved. This milestone cannot certify live provider behavior without actual credentials. Keys are absent in the observed environment and private `.env`; no paid audit or embedding request has been run. There is no silent fixture fallback.
+The verified fixture milestone is preserved. This milestone cannot certify live provider behavior without actual credentials. Current account state: credentials are configured privately, but the user reports zero OpenAI balance. One bounded live audit stopped on its first embedding HTTP 429; no successful live analysis or embeddings resulted. Paid execution is stopped, with no automatic retry. See `PHASE34.md` and the live-preflight report for the preserved ledger. The commands below are prepared for a later, explicitly authorised funded run. There is no silent fixture fallback.
 
 ## Configuration (private `.env` only)
 
@@ -31,7 +31,7 @@ docker compose --env-file .env -f infra/compose.yaml up --build -d
 docker compose --env-file .env -f infra/compose.yaml exec -T worker python -m siteproof.migrate
 ```
 
-Do not use the fixture integration override for a live run: it explicitly forces fixture mode. Keep `SITEPROOF_TEST_FIXTURE_HTTP=false`; live URL restrictions are unchanged. Host an operator-controlled English service-business fixture on a public HTTP(S) address. Do not bypass private-network restrictions for a live model test.
+Do not use the fixture integration override for a live run: it explicitly forces fixture mode. Keep `SITEPROOF_TEST_FIXTURE_HTTP=false`; live URL restrictions are unchanged. Use an operator-controlled public fixture or the narrowly scoped, disabled-by-default live-validation fixture override documented below. Production private-network restrictions remain unchanged.
 
 ## One bounded audit
 

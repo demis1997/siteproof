@@ -1,0 +1,95 @@
+{
+  "generated_at": "2026-10-06T19:57:37.372486+00:00",
+  "code_commit": "e78b7911003534b320c9a41b0ecebb06a3cb92fe",
+  "mode": "live",
+  "status": "BLOCKED",
+  "live_audits_submitted": 1,
+  "actual_live_tokens": null,
+  "cost_usd": null,
+  "configuration": {
+    "chat_endpoint": "https://api.openai.com/v1",
+    "chat_model": "gpt-4.1-mini",
+    "embedding_endpoint": "https://api.openai.com/v1",
+    "embedding_model": "text-embedding-3-small",
+    "embedding_version": "v1",
+    "dimensions": 1536,
+    "credential_sharing": false,
+    "chat_key_present": true,
+    "embedding_key_present": true,
+    "prices_known": true
+  },
+  "limitations": [
+    "No exactly-once model execution claim. Request hashes prove transmitted bytes, not remote vision comprehension.",
+    "Human design/hypothesis judgments are unverified. Fixture and live results must remain separate."
+  ],
+  "job_id": "4b355933-0f79-48f1-a614-28ae9ab65cd7",
+  "job_status": "needs_review",
+  "retry_count": 1,
+  "error": {
+    "code": "HTTPStatusError",
+    "attempt": 1,
+    "message": "{\"http_status\": 429, \"error_code\": null, \"sanitised_message\": \"Provider rejected the request; error subtype is unavailable or unrecognised.\", \"account_action\": \"Inspect project billing/quota and model rate limits; do not infer the cause from HTTP status alone.\", \"cost_usd\": null, \"automatic_retry\": false}",
+    "retryable": false
+  },
+  "images_match_transmitted_bytes": null,
+  "critical_business_facts_preserved": null,
+  "provider_embedding_identity_used": false,
+  "runs": [],
+  "guidance": [],
+  "finding_review": [],
+  "fact_provenance": [
+    {
+      "id": "fact-0",
+      "kind": "phone",
+      "source_url": "http://fixture.siteproof.test/overflow",
+      "evidence_id": "dom-desktop",
+      "captured_at": "2026-10-06T19:55:28.069504+00:00"
+    },
+    {
+      "id": "fact-1",
+      "kind": "email",
+      "source_url": "http://fixture.siteproof.test/overflow",
+      "evidence_id": "dom-desktop",
+      "captured_at": "2026-10-06T19:55:28.069504+00:00"
+    },
+    {
+      "id": "fact-service-1",
+      "kind": "service",
+      "source_url": "http://fixture.siteproof.test/overflow",
+      "evidence_id": "dom-desktop",
+      "captured_at": "2026-10-06T19:55:28.069504+00:00"
+    },
+    {
+      "id": "fact-service-2",
+      "kind": "service",
+      "source_url": "http://fixture.siteproof.test/overflow",
+      "evidence_id": "dom-desktop",
+      "captured_at": "2026-10-06T19:55:28.069504+00:00"
+    },
+    {
+      "id": "fact-service-3",
+      "kind": "service",
+      "source_url": "http://fixture.siteproof.test/overflow",
+      "evidence_id": "dom-desktop",
+      "captured_at": "2026-10-06T19:55:28.069504+00:00"
+    },
+    {
+      "id": "fact-text-17",
+      "kind": "hours",
+      "source_url": "http://fixture.siteproof.test/overflow",
+      "evidence_id": "dom-desktop",
+      "captured_at": "2026-10-06T19:55:28.069504+00:00"
+    }
+  ],
+  "embedding_calls": 0,
+  "embedding_verification": "BLOCKED: first embeddings request rejected HTTP 429; no successful vectors",
+  "elapsed_seconds": 66.56503701210022,
+  "ui_review": "UNVERIFIED: inspect authenticated dashboard for live label, provenance and corrections",
+  "provider_requests_attempted": 1,
+  "successful_embedding_requests": 0,
+  "live_text_vision_requests": 0,
+  "account_state": "User confirmed zero OpenAI balance; paid requests stopped",
+  "provenance": "Inspection followed one submitted live job; source included uncommitted Phase 3\u20134 changes.",
+  "original_fact_provenance_present": true,
+  "live_preservation_verification": "NOT_APPLICABLE: no live redesign was generated"
+}

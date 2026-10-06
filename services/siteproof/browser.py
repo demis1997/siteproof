@@ -1,8 +1,10 @@
+import asyncio
 import threading
 from contextlib import contextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Header, HTTPException
+from fastapi import Request as ConnectionRequest
 from pydantic import BaseModel
 
 from .capture import capture
@@ -28,18 +30,34 @@ class Request(BaseModel):
     html: str | None = None
 
 
+async def monitored_capture(connection, **kwargs):
+    cancelled = threading.Event()
+
+    def operate():
+        with slot():
+            return capture(cancel_event=cancelled, **kwargs)
+
+    task = asyncio.create_task(asyncio.to_thread(operate))
+    try:
+        while not task.done():
+            if await connection.is_disconnected():
+                cancelled.set()
+            await asyncio.sleep(0.25)
+        return await task
+    finally:
+        cancelled.set()
+
+
 @app.post("/capture")
-def run(request: Request, x_browser_key: str = Header("")):
+async def run(request: Request, connection: ConnectionRequest, x_browser_key: str = Header("")):
     if x_browser_key != settings.browser_key:
         raise HTTPException(401, "Invalid service credential")
     if request.html is not None:
         if len(request.html) > 100000:
             raise HTTPException(413, "Preview too large")
-        with slot():
-            return capture(html=request.html)
+        return await monitored_capture(connection, html=request.html)
     if request.url and test_fixture_url(request.url):
-        with slot():
-            return capture(url=validate_url(request.url))
+        return await monitored_capture(connection, url=validate_url(request.url))
     if settings.mode == "fixture" and request.url and request.url.startswith("https://fixture.siteproof.test/"):
         name = request.url.rstrip("/").split("/")[-1]
         if name not in (
@@ -79,10 +97,8 @@ def run(request: Request, x_browser_key: str = Header("")):
         path = Path("/app/evals/fixtures") / (mapped + ".html")
         if not path.exists():
             raise HTTPException(422, "Fixture not installed")
-        with slot():
-            return capture(html=path.read_text(), source_url=request.url)
+        return await monitored_capture(connection, html=path.read_text(), source_url=request.url)
     try:
-        with slot():
-            return capture(url=validate_url(request.url or ""))
+        return await monitored_capture(connection, url=validate_url(request.url or ""))
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc

@@ -114,12 +114,12 @@ def create(body: CreateJob, t: str = Depends(tenant), idempotency_key: str = Hea
         "fixture": settings.mode == "fixture",
         "budget": {
             "max_tokens": 12000,
-            "max_tool_calls": 20,
-            "max_seconds": 180,
+            "max_tool_calls": 20 if settings.mode == "live" else 40,
+            "max_seconds": 180 if settings.mode == "live" else 600,
             "max_cost": 1 if settings.mode != "live" or settings.prices_known() else None,
             "cost": None,
         },
-        "versions": {"prompt": "auditor-v2", "guidance": "guidance-v1", "renderer": "components-v1"},
+        "versions": {"prompt": "auditor-v2", "guidance": "guidance-v1", "renderer": "components-v2"},
     }
     with db.connection() as conn:
         created = conn.execute(
@@ -184,6 +184,8 @@ def items(job_id: str, kind: str, t: str = Depends(tenant)):
         "verification": "VerificationResult",
         "runs": "ModelRun",
         "captures": "Capture",
+        "redesigns": "Redesign",
+        "events": "TraceEvent",
     }
     if kind == "preview-html":
         designs = db.records(t, job_id, "Redesign")
@@ -246,6 +248,8 @@ def redesign(job_id: str, t: str = Depends(tenant)):
     job = job_or_404(t, job_id)
     if job["status"] != "needs_review":
         raise HTTPException(409, "Audit must finish before redesign")
+    if job.get("error"):
+        raise HTTPException(409, "Resolve the failed audit before requesting a redesign")
     findings = db.records(t, job_id, "Finding")
     facts = db.records(t, job_id, "BusinessFact")
     if any(not f.get("approved") for f in findings + facts):
@@ -284,7 +288,7 @@ def review(job_id: str, body: Review, t: str = Depends(tenant)):
     ):
         raise HTTPException(409, "Failed or unavailable required verification prevents acceptance")
     db.save_records(t, job_id, "ReviewDecision", [{"id": str(uuid.uuid4()), "decision": body.decision}])
-    db.update_job(t, job_id, "completed" if body.decision == "accept" else "needs_review")
+    db.update_job(t, job_id, "completed" if body.decision == "accept" else "needs_review", {"human_accepted": body.decision == "accept"})
     return {"status": "completed" if body.decision == "accept" else "needs_review"}
 
 

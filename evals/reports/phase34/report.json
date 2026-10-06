@@ -1,0 +1,574 @@
+{
+  "generated_at": "2026-10-06T20:26:13.581708+00:00",
+  "mode": "fixture",
+  "pipeline": {
+    "job_id": "00be016b-0eae-4069-9c82-2826c65fc933",
+    "targeted_repair": true,
+    "facts_preserved": true,
+    "verification": [
+      {
+        "id": "verification-1-0",
+        "layout": "editorial",
+        "results": [
+          {
+            "id": "verification-finding-horizontal_overflow-mobile",
+            "method": "horizontal_overflow",
+            "status": "fixed",
+            "finding_id": "finding-horizontal_overflow-mobile",
+            "evidence_ids": [
+              "after-1-0-horizontal_overflow-desktop",
+              "after-1-0-horizontal_overflow-mobile"
+            ]
+          }
+        ],
+        "revision": 1,
+        "tenant_id": "integration",
+        "limitations": [
+          "Automated checks do not establish WCAG compliance or conversion impact.",
+          "Design hypotheses require human or live-user validation."
+        ],
+        "regressions": [],
+        "missing_checks": [],
+        "facts_preserved": true,
+        "repair_attempts": 0,
+        "rendered_fact_checks": [
+          {
+            "passed": true,
+            "viewport": "desktop"
+          },
+          {
+            "passed": true,
+            "viewport": "mobile"
+          }
+        ],
+        "lighthouse_comparison": [
+          {
+            "after": {
+              "seo": 0.45,
+              "performance": 1.0,
+              "accessibility": 1.0,
+              "best-practices": 1.0
+            },
+            "before": {
+              "seo": 0.45,
+              "performance": 1.0,
+              "accessibility": 1.0,
+              "best-practices": 1.0
+            },
+            "viewport": "desktop"
+          },
+          {
+            "after": {
+              "seo": 0.45,
+              "performance": 0.995,
+              "accessibility": 1.0,
+              "best-practices": 1.0
+            },
+            "before": {
+              "seo": 0.45,
+              "performance": 1.0,
+              "accessibility": 1.0,
+              "best-practices": 1.0
+            },
+            "viewport": "mobile"
+          }
+        ],
+        "required_checks_passed": true
+      }
+    ],
+    "redesign_latency_seconds": 67.51614241697825,
+    "review_boundary": "API accept/reject exercised by test script, not independent human quality acceptance"
+  },
+  "faults": {
+    "mode": "fixture",
+    "boundary": "Real renderer/capture/PG checkpoints with explicitly injected CSS faults; not live designer regressions",
+    "scenarios": [
+      {
+        "scenario": "repaired-regression",
+        "job_id": "32de4ab5-4d5e-4eca-9dd6-606584152a31",
+        "repair_attempts": 1,
+        "verification_passed": true,
+        "human_accepted": false,
+        "latency_seconds": 168.46921428599853,
+        "duplicate_delivery_no_new_evidence": true,
+        "verification": [
+          {
+            "id": "verification-1-0",
+            "layout": "editorial",
+            "results": [
+              {
+                "id": "verification-finding-horizontal_overflow-mobile",
+                "method": "horizontal_overflow",
+                "status": "regressed",
+                "finding_id": "finding-horizontal_overflow-mobile",
+                "evidence_ids": [
+                  "after-1-0-horizontal_overflow-desktop",
+                  "after-1-0-horizontal_overflow-mobile"
+                ]
+              }
+            ],
+            "revision": 1,
+            "tenant_id": "integration",
+            "limitations": [
+              "Automated checks do not establish WCAG compliance or conversion impact.",
+              "Design hypotheses require human or live-user validation."
+            ],
+            "regressions": [
+              "after-1-0-horizontal_overflow-desktop"
+            ],
+            "missing_checks": [],
+            "facts_preserved": true,
+            "repair_attempts": 0,
+            "rendered_fact_checks": [
+              {
+                "passed": true,
+                "viewport": "desktop"
+              },
+              {
+                "passed": true,
+                "viewport": "mobile"
+              }
+            ],
+            "lighthouse_comparison": [
+              {
+                "after": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "before": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "viewport": "desktop"
+              },
+              {
+                "after": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "before": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "viewport": "mobile"
+              }
+            ],
+            "required_checks_passed": false
+          },
+          {
+            "id": "verification-1-1",
+            "layout": "compact",
+            "results": [
+              {
+                "id": "verification-finding-horizontal_overflow-mobile",
+                "method": "horizontal_overflow",
+                "status": "fixed",
+                "finding_id": "finding-horizontal_overflow-mobile",
+                "evidence_ids": [
+                  "after-1-1-horizontal_overflow-desktop",
+                  "after-1-1-horizontal_overflow-mobile"
+                ]
+              }
+            ],
+            "revision": 1,
+            "tenant_id": "integration",
+            "limitations": [
+              "Automated checks do not establish WCAG compliance or conversion impact.",
+              "Design hypotheses require human or live-user validation."
+            ],
+            "regressions": [],
+            "missing_checks": [],
+            "facts_preserved": true,
+            "repair_attempts": 1,
+            "rendered_fact_checks": [
+              {
+                "passed": true,
+                "viewport": "desktop"
+              },
+              {
+                "passed": true,
+                "viewport": "mobile"
+              }
+            ],
+            "lighthouse_comparison": [
+              {
+                "after": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "before": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "viewport": "desktop"
+              },
+              {
+                "after": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "before": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "viewport": "mobile"
+              }
+            ],
+            "required_checks_passed": true
+          }
+        ]
+      },
+      {
+        "scenario": "repair-exhaustion",
+        "job_id": "0da0c02c-701c-448b-97cd-22601c700276",
+        "repair_attempts": 2,
+        "verification_passed": false,
+        "human_accepted": false,
+        "latency_seconds": 220.70719730899873,
+        "duplicate_delivery_no_new_evidence": true,
+        "verification": [
+          {
+            "id": "verification-1-0",
+            "layout": "editorial",
+            "results": [
+              {
+                "id": "verification-finding-horizontal_overflow-mobile",
+                "method": "horizontal_overflow",
+                "status": "regressed",
+                "finding_id": "finding-horizontal_overflow-mobile",
+                "evidence_ids": [
+                  "after-1-0-horizontal_overflow-desktop",
+                  "after-1-0-horizontal_overflow-mobile"
+                ]
+              }
+            ],
+            "revision": 1,
+            "tenant_id": "integration",
+            "limitations": [
+              "Automated checks do not establish WCAG compliance or conversion impact.",
+              "Design hypotheses require human or live-user validation."
+            ],
+            "regressions": [
+              "after-1-0-horizontal_overflow-desktop"
+            ],
+            "missing_checks": [],
+            "facts_preserved": true,
+            "repair_attempts": 0,
+            "rendered_fact_checks": [
+              {
+                "passed": true,
+                "viewport": "desktop"
+              },
+              {
+                "passed": true,
+                "viewport": "mobile"
+              }
+            ],
+            "lighthouse_comparison": [
+              {
+                "after": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "before": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "viewport": "desktop"
+              },
+              {
+                "after": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "before": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "viewport": "mobile"
+              }
+            ],
+            "required_checks_passed": false
+          },
+          {
+            "id": "verification-1-1",
+            "layout": "compact",
+            "results": [
+              {
+                "id": "verification-finding-horizontal_overflow-mobile",
+                "method": "horizontal_overflow",
+                "status": "regressed",
+                "finding_id": "finding-horizontal_overflow-mobile",
+                "evidence_ids": [
+                  "after-1-1-horizontal_overflow-desktop",
+                  "after-1-1-horizontal_overflow-mobile"
+                ]
+              }
+            ],
+            "revision": 1,
+            "tenant_id": "integration",
+            "limitations": [
+              "Automated checks do not establish WCAG compliance or conversion impact.",
+              "Design hypotheses require human or live-user validation."
+            ],
+            "regressions": [
+              "after-1-1-horizontal_overflow-desktop"
+            ],
+            "missing_checks": [],
+            "facts_preserved": true,
+            "repair_attempts": 1,
+            "rendered_fact_checks": [
+              {
+                "passed": true,
+                "viewport": "desktop"
+              },
+              {
+                "passed": true,
+                "viewport": "mobile"
+              }
+            ],
+            "lighthouse_comparison": [
+              {
+                "after": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "before": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "viewport": "desktop"
+              },
+              {
+                "after": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "before": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "viewport": "mobile"
+              }
+            ],
+            "required_checks_passed": false
+          },
+          {
+            "id": "verification-1-2",
+            "layout": "classic",
+            "results": [
+              {
+                "id": "verification-finding-horizontal_overflow-mobile",
+                "method": "horizontal_overflow",
+                "status": "regressed",
+                "finding_id": "finding-horizontal_overflow-mobile",
+                "evidence_ids": [
+                  "after-1-2-horizontal_overflow-desktop",
+                  "after-1-2-horizontal_overflow-mobile"
+                ]
+              }
+            ],
+            "revision": 1,
+            "tenant_id": "integration",
+            "limitations": [
+              "Automated checks do not establish WCAG compliance or conversion impact.",
+              "Design hypotheses require human or live-user validation."
+            ],
+            "regressions": [
+              "after-1-2-horizontal_overflow-desktop"
+            ],
+            "missing_checks": [],
+            "facts_preserved": true,
+            "repair_attempts": 2,
+            "rendered_fact_checks": [
+              {
+                "passed": true,
+                "viewport": "desktop"
+              },
+              {
+                "passed": true,
+                "viewport": "mobile"
+              }
+            ],
+            "lighthouse_comparison": [
+              {
+                "after": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "before": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "viewport": "desktop"
+              },
+              {
+                "after": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "before": {
+                  "seo": 0.45,
+                  "performance": 1.0,
+                  "accessibility": 1.0,
+                  "best-practices": 1.0
+                },
+                "viewport": "mobile"
+              }
+            ],
+            "required_checks_passed": false
+          }
+        ],
+        "failed_acceptance_http_status": 409
+      }
+    ]
+  },
+  "load": {
+    "mode": "fixture",
+    "sample_size": 3,
+    "submission_concurrency": 1,
+    "worker_count": 1,
+    "per_domain_limit": 1,
+    "browser_limit": 1,
+    "hardware": {
+      "host_platform": "macOS-26.5.1-arm64-arm-64bit",
+      "machine": "arm64",
+      "docker": "14 CPUs, 8217473024 bytes"
+    },
+    "completion_count": 3,
+    "failures": [],
+    "p50_latency_seconds": 114.35646620899206,
+    "p95_latency_seconds": 187.61313141696155,
+    "latencies_seconds": [
+      63.37144087499473,
+      114.35646620899206,
+      187.61313141696155
+    ],
+    "limitations": [
+      "Small fixture-provider queue burst; not live inference capacity or a scalability benchmark.",
+      "Latency measured from shared submission start to each observed completion.",
+      "This local observation used three closely spaced sequential HTTP submissions; future harness uses concurrent requests."
+    ],
+    "queued_burst_size": 3
+  },
+  "cancellation": "PASS",
+  "comparisons": {
+    "A_single_prompt": {
+      "status": "BLOCKED",
+      "repair_metrics": "not_applicable",
+      "reason": "Live provider preflight rejected HTTP429; no paid baseline run"
+    },
+    "B_RAG_audit": {
+      "status": "BLOCKED",
+      "repair_metrics": "not_applicable",
+      "reason": "Live provider preflight rejected HTTP429; fixture auditor is deterministic, not a live baseline"
+    },
+    "C_fixture_workflow": {
+      "status": "PASS",
+      "sample_size": 1,
+      "targeted_repair_success": 1,
+      "critical_fact_preservation": 1
+    }
+  },
+  "limitations": [
+    "Agent-authored labels and automated review decisions are not independent human assessments.",
+    "One synthetic business in the pipeline scenario; no client generalization.",
+    "Live A/B/C quality comparison remains blocked."
+  ],
+  "source_provenance": {
+    "base_commit": "e78b7911003534b320c9a41b0ecebb06a3cb92fe",
+    "working_tree_changes": true,
+    "note": "GitHub CI records its exact committed source revision; local observations include implementation working-tree changes."
+  },
+  "development_metrics": {
+    "sample_size": 3,
+    "grading_unit": "category per page",
+    "tp": 1,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "evidence_support_pages": 3,
+    "independent_human_labels": false
+  },
+  "held_out_label_sha256": "2c44ba8b30858663bfa7617228c788c402a48f6fd2962a80c5aa3b9b2bdc5748",
+  "redesign_restart_recovery": {
+    "mode": "fixture",
+    "job_id": "26d29a2e-3896-4fc2-80ac-9ebcf9793fe1",
+    "status": "PASS",
+    "interrupted_stage": "verifying",
+    "persistent_checkpoints": true,
+    "unique_evidence_count": 40,
+    "verification_count": 1,
+    "event_count": 6,
+    "human_accepted": false,
+    "boundary": "Actual worker SIGKILL during deterministic preview capture; no paid requests or simulated recovery."
+  },
+  "ui": {
+    "job_id": "00be016b-0eae-4069-9c82-2826c65fc933",
+    "mode": "fixture",
+    "status": "PASS",
+    "checks": [
+      "real four-image before/after comparison",
+      "persistent fixture label",
+      "repair-history view",
+      "accepted job cannot be accepted again",
+      "authenticated noindex document",
+      "script-free iframe",
+      "functional contact scheme"
+    ],
+    "human_quality_review": "pending"
+  },
+  "blocked": [
+    "live model quality",
+    "semantic retrieval",
+    "actual inference costs",
+    "independent human design quality"
+  ],
+  "paid_validation": {
+    "requests_stopped": true,
+    "automatic_429_retry": false,
+    "reserved_usd": 2,
+    "unallocated_usd": 3.6345,
+    "actual_cost_usd": null,
+    "note": "Existing ledger reservations preserved; not measured invoice charges."
+  }
+}

@@ -29,6 +29,9 @@ def dispatch_outbox(queue):
 
 
 def is_retryable(exc):
+    # Live provider failures require operator review, never automatic paid retries.
+    if isinstance(exc, httpx.HTTPStatusError) and exc.request.url.path in ("/v1/embeddings", "/v1/chat/completions"):
+        return False
     return isinstance(
         exc,
         (
@@ -99,7 +102,7 @@ def main():
                 time.sleep(30 if browser_busy else min(2**attempt + random.random(), 10))
                 queue.lpush("siteproof:queue", json.dumps(task))
             else:
-                limited = isinstance(exc, ValueError) and ("budget" in str(exc).lower() or "limit" in str(exc).lower())
+                limited = (isinstance(exc, ValueError) and ("budget" in str(exc).lower() or "limit" in str(exc).lower())) or (isinstance(exc, httpx.HTTPStatusError) and exc.request.url.path in ("/v1/embeddings", "/v1/chat/completions"))
                 update_job(
                     tenant,
                     job_id,

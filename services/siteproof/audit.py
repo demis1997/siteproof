@@ -50,7 +50,7 @@ def audit_evidence(evidence: list[dict]) -> list[dict]:
     return validate_findings(findings, evidence)
 
 
-def verify(findings, before, after, facts, spec):
+def verify(findings, before, after, facts, spec, *, require_lighthouse=False):
     """Require every check at both viewports, and preserve human uncertainty."""
     results = []
     try:
@@ -93,6 +93,11 @@ def verify(findings, before, after, facts, spec):
         for name in REQUIRED_CHECKS
         if (name, viewport) not in check_index
     ]
+    if require_lighthouse:
+        for phase, measurements in [("before", before), ("after", after)]:
+            for viewport in VIEWPORTS:
+                if not any(e.get("kind") == "lighthouse" and e.get("viewport") == viewport and e.get("sample_count", 0) >= 2 for e in measurements):
+                    missing.append({"name": "lighthouse", "viewport": viewport, "phase": phase})
     for finding in findings:
         method = finding["verification_method"]
         checks = [e for e in after if e["kind"] == "check" and e.get("name") == method]
@@ -141,6 +146,7 @@ def verify(findings, before, after, facts, spec):
         "required_checks_passed": accepted,
         "missing_checks": missing,
         "rendered_fact_checks": rendered_fact_checks,
+        "lighthouse_comparison": [{"viewport": viewport, "before": next((e.get("median_scores") for e in before if e.get("kind") == "lighthouse" and e.get("viewport") == viewport), None), "after": next((e.get("median_scores") for e in after if e.get("kind") == "lighthouse" and e.get("viewport") == viewport), None)} for viewport in VIEWPORTS],
         "limitations": [
             "Automated checks do not establish WCAG compliance or conversion impact.",
             "Design hypotheses require human or live-user validation.",

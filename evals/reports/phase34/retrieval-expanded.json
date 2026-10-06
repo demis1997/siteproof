@@ -1,0 +1,754 @@
+{
+  "generated_at": "2026-10-06T20:41:20.547467+00:00",
+  "code_commit": null,
+  "corpus_version": "retrieval-corpus-v1",
+  "dataset_version": "retrieval-dataset-v1",
+  "documents": 18,
+  "queries": 32,
+  "corpus_sha256": "f7bae072d8d50c8fba963f6286e1369b2f34d10a82923a2c676271cfe6e9569d",
+  "dataset_sha256": "80663bec538bb386d9e122c9bf8f893d219ec87945f436f7597ae7df41328bdd",
+  "embedding_identity": null,
+  "provider_endpoint_configured": true,
+  "metrics": {
+    "dev": {
+      "keyword": {
+        "recall_at_3": 0.75,
+        "recall_at_5": 0.75,
+        "mrr": 0.9285714285714286,
+        "ndcg_at_5": 0.8804476745800582,
+        "answer_query_count": 14,
+        "latency_p50_ms": 36.20466599932115,
+        "latency_p95_ms": 53.46270800146158
+      },
+      "vector": null,
+      "hybrid": null
+    },
+    "held_out": {
+      "keyword": {
+        "recall_at_3": 0.8571428571428571,
+        "recall_at_5": 0.8928571428571429,
+        "mrr": 0.8928571428571429,
+        "ndcg_at_5": 0.8175936801351376,
+        "answer_query_count": 14,
+        "latency_p50_ms": 48.05391700028849,
+        "latency_p95_ms": 121.21112500244635
+      },
+      "vector": null,
+      "hybrid": null
+    }
+  },
+  "no_answer": {
+    "dev": {
+      "keyword": {
+        "query_count": 2,
+        "raw_empty_results": 1,
+        "raw_false_answer_rate": 0.5
+      },
+      "vector": null,
+      "hybrid": null
+    },
+    "held_out": {
+      "keyword": {
+        "query_count": 2,
+        "raw_empty_results": 1,
+        "raw_false_answer_rate": 0.5
+      },
+      "vector": null,
+      "hybrid": null
+    }
+  },
+  "observations": [
+    {
+      "query_id": "q01",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-labels-v1",
+        "bench-contacts-v1"
+      ],
+      "similarities": {
+        "bench-labels-v1": null,
+        "bench-contacts-v1": null
+      },
+      "latency_ms": 30.911249999917345,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q02",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-regions-v1",
+        "bench-contacts-v1",
+        "bench-links-v1",
+        "bench-menus-v1"
+      ],
+      "similarities": {
+        "bench-regions-v1": null,
+        "bench-contacts-v1": null,
+        "bench-links-v1": null,
+        "bench-menus-v1": null
+      },
+      "latency_ms": 40.00383300081012,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 0.0,
+        "recall_at_5": 0.0,
+        "mrr": 0,
+        "ndcg_at_5": 0.0
+      }
+    },
+    {
+      "query_id": "q03",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-contacts-v1",
+        "bench-facts-v1"
+      ],
+      "similarities": {
+        "bench-contacts-v1": null,
+        "bench-facts-v1": null
+      },
+      "latency_ms": 40.54116699990118,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q04",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-images-v1",
+        "bench-assets-v1"
+      ],
+      "similarities": {
+        "bench-images-v1": null,
+        "bench-assets-v1": null
+      },
+      "latency_ms": 53.46270800146158,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q05",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-regions-v1",
+        "bench-contacts-v1",
+        "bench-images-v1",
+        "bench-overflow-v1"
+      ],
+      "similarities": {
+        "bench-regions-v1": null,
+        "bench-contacts-v1": null,
+        "bench-images-v1": null,
+        "bench-overflow-v1": null
+      },
+      "latency_ms": 39.69324999707169,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.9173194127129571
+      }
+    },
+    {
+      "query_id": "q06",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-menus-v1",
+        "bench-recovery-v1",
+        "bench-regions-v1"
+      ],
+      "similarities": {
+        "bench-menus-v1": null,
+        "bench-recovery-v1": null,
+        "bench-regions-v1": null
+      },
+      "latency_ms": 27.974500000709668,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.7871546029909718
+      }
+    },
+    {
+      "query_id": "q07",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-facts-v1",
+        "bench-capture-v1",
+        "bench-assets-v1",
+        "bench-budgets-v1",
+        "bench-contacts-v1"
+      ],
+      "similarities": {
+        "bench-facts-v1": null,
+        "bench-capture-v1": null,
+        "bench-assets-v1": null,
+        "bench-budgets-v1": null,
+        "bench-contacts-v1": null
+      },
+      "latency_ms": 22.141041998111177,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q08",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-hypotheses-v1",
+        "bench-budgets-v1",
+        "bench-facts-v1",
+        "bench-recovery-v1"
+      ],
+      "similarities": {
+        "bench-hypotheses-v1": null,
+        "bench-budgets-v1": null,
+        "bench-facts-v1": null,
+        "bench-recovery-v1": null
+      },
+      "latency_ms": 38.33350000058999,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.9173194127129571
+      }
+    },
+    {
+      "query_id": "q09",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-links-v1",
+        "bench-facts-v1"
+      ],
+      "similarities": {
+        "bench-links-v1": null,
+        "bench-facts-v1": null
+      },
+      "latency_ms": 34.10795899981167,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q10",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-budgets-v1",
+        "bench-facts-v1"
+      ],
+      "similarities": {
+        "bench-budgets-v1": null,
+        "bench-facts-v1": null
+      },
+      "latency_ms": 39.23866599870962,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q11",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-recovery-v1"
+      ],
+      "similarities": {
+        "bench-recovery-v1": null
+      },
+      "latency_ms": 32.54891699907603,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q12",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-security-v1"
+      ],
+      "similarities": {
+        "bench-security-v1": null
+      },
+      "latency_ms": 34.223041999212,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q13",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-capture-v1",
+        "bench-menus-v1",
+        "bench-focus-v1",
+        "bench-overflow-v1",
+        "bench-regions-v1"
+      ],
+      "similarities": {
+        "bench-capture-v1": null,
+        "bench-menus-v1": null,
+        "bench-focus-v1": null,
+        "bench-overflow-v1": null,
+        "bench-regions-v1": null
+      },
+      "latency_ms": 51.849291998223634,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.7871546029909718
+      }
+    },
+    {
+      "query_id": "q14",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-assets-v1"
+      ],
+      "similarities": {
+        "bench-assets-v1": null
+      },
+      "latency_ms": 34.445416000380646,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.9173194127129571
+      }
+    },
+    {
+      "query_id": "q15",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [],
+      "similarities": {},
+      "latency_ms": 33.62612499768147,
+      "no_answer": true,
+      "metrics": null
+    },
+    {
+      "query_id": "q16",
+      "split": "dev",
+      "arm": "keyword",
+      "ids": [
+        "bench-budgets-v1"
+      ],
+      "similarities": {
+        "bench-budgets-v1": null
+      },
+      "latency_ms": 37.963915998261655,
+      "no_answer": true,
+      "metrics": null
+    },
+    {
+      "query_id": "q17",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-labels-v1",
+        "bench-capture-v1"
+      ],
+      "similarities": {
+        "bench-labels-v1": null,
+        "bench-capture-v1": null
+      },
+      "latency_ms": 35.381166999286506,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q18",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-overflow-v1",
+        "bench-contacts-v1"
+      ],
+      "similarities": {
+        "bench-overflow-v1": null,
+        "bench-contacts-v1": null
+      },
+      "latency_ms": 33.33504200054449,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q19",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-focus-v1",
+        "bench-images-v1",
+        "bench-labels-v1",
+        "bench-security-v1"
+      ],
+      "similarities": {
+        "bench-focus-v1": null,
+        "bench-images-v1": null,
+        "bench-labels-v1": null,
+        "bench-security-v1": null
+      },
+      "latency_ms": 121.21112500244635,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 0.0,
+        "recall_at_5": 0.0,
+        "mrr": 0,
+        "ndcg_at_5": 0.0
+      }
+    },
+    {
+      "query_id": "q20",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-labels-v1"
+      ],
+      "similarities": {
+        "bench-labels-v1": null
+      },
+      "latency_ms": 45.706249999057036,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 0.5,
+        "recall_at_5": 0.5,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.1310456303875653
+      }
+    },
+    {
+      "query_id": "q21",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-regions-v1",
+        "bench-overflow-v1"
+      ],
+      "similarities": {
+        "bench-regions-v1": null,
+        "bench-overflow-v1": null
+      },
+      "latency_ms": 62.5444580000476,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q22",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-menus-v1",
+        "bench-focus-v1",
+        "bench-regions-v1",
+        "bench-capture-v1"
+      ],
+      "similarities": {
+        "bench-menus-v1": null,
+        "bench-focus-v1": null,
+        "bench-regions-v1": null,
+        "bench-capture-v1": null
+      },
+      "latency_ms": 79.24729099977412,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.8339912323981488
+      }
+    },
+    {
+      "query_id": "q23",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-facts-v1"
+      ],
+      "similarities": {
+        "bench-facts-v1": null
+      },
+      "latency_ms": 47.210166998411296,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q24",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-hypotheses-v1",
+        "bench-compare-v1",
+        "bench-contacts-v1",
+        "bench-images-v1",
+        "bench-recovery-v1"
+      ],
+      "similarities": {
+        "bench-hypotheses-v1": null,
+        "bench-compare-v1": null,
+        "bench-contacts-v1": null,
+        "bench-images-v1": null,
+        "bench-recovery-v1": null
+      },
+      "latency_ms": 36.36995800115983,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q25",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-links-v1",
+        "bench-capture-v1"
+      ],
+      "similarities": {
+        "bench-links-v1": null,
+        "bench-capture-v1": null
+      },
+      "latency_ms": 38.47633299665176,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q26",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-budgets-v1",
+        "bench-tables-v1"
+      ],
+      "similarities": {
+        "bench-budgets-v1": null,
+        "bench-tables-v1": null
+      },
+      "latency_ms": 34.896875000413274,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q27",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-recovery-v1",
+        "bench-budgets-v1",
+        "bench-hypotheses-v1",
+        "bench-tables-v1"
+      ],
+      "similarities": {
+        "bench-recovery-v1": null,
+        "bench-budgets-v1": null,
+        "bench-hypotheses-v1": null,
+        "bench-tables-v1": null
+      },
+      "latency_ms": 51.82362499908777,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q28",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-security-v1"
+      ],
+      "similarities": {
+        "bench-security-v1": null
+      },
+      "latency_ms": 72.26625000112108,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0
+      }
+    },
+    {
+      "query_id": "q29",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-compare-v1",
+        "bench-recovery-v1",
+        "bench-budgets-v1",
+        "bench-security-v1",
+        "bench-capture-v1"
+      ],
+      "similarities": {
+        "bench-compare-v1": null,
+        "bench-recovery-v1": null,
+        "bench-budgets-v1": null,
+        "bench-security-v1": null,
+        "bench-capture-v1": null
+      },
+      "latency_ms": 48.89766700216569,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 0.5,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 0.8503449055347546
+      }
+    },
+    {
+      "query_id": "q30",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-security-v1",
+        "bench-retention-v1"
+      ],
+      "similarities": {
+        "bench-security-v1": null,
+        "bench-retention-v1": null
+      },
+      "latency_ms": 52.61991600127658,
+      "no_answer": false,
+      "metrics": {
+        "recall_at_3": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 0.5,
+        "ndcg_at_5": 0.6309297535714575
+      }
+    },
+    {
+      "query_id": "q31",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [
+        "bench-contacts-v1",
+        "bench-recovery-v1"
+      ],
+      "similarities": {
+        "bench-contacts-v1": null,
+        "bench-recovery-v1": null
+      },
+      "latency_ms": 51.52795799949672,
+      "no_answer": true,
+      "metrics": null
+    },
+    {
+      "query_id": "q32",
+      "split": "held_out",
+      "arm": "keyword",
+      "ids": [],
+      "similarities": {},
+      "latency_ms": 38.434042002336355,
+      "no_answer": true,
+      "metrics": null
+    }
+  ],
+  "embedding_runs": [],
+  "embedding_usage": {
+    "calls": 0,
+    "tokens": 0,
+    "cost_usd": null,
+    "cost_known": false
+  },
+  "semantic_status": "BLOCKED: no real embedding calls requested/configured",
+  "monetary_ceiling": "UNVERIFIED: missing prices/FX or no paid run",
+  "tuning": "No tuning performed. Frozen raw retrieval baseline; reranking disabled.",
+  "limitations": [
+    "Coding-agent-authored relevance labels need independent human review.",
+    "Fixed authored development/held-out queries. Same corpus; query paraphrase families overlap, so this is not held-out website generalization. No tuning on held-out labels.",
+    "Raw nearest-neighbor/RRF has no calibrated abstention guarantee; no-answer failures reported separately.",
+    "No semantic ranking claim without actual provider embeddings."
+  ]
+}

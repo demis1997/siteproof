@@ -1,0 +1,44 @@
+{
+  "split": "dev",
+  "labels_author": "coding-agent",
+  "samples": [
+    {
+      "slug": "maple-cleaning-clean",
+      "job_id": "f1504273-7b70-44df-b5cf-893905cd874b",
+      "expected_categories": [],
+      "actual_categories": [],
+      "true_positive_categories": 0,
+      "false_positive_categories": 0,
+      "false_negative_categories": 0,
+      "evidence_support": true,
+      "finding_count": 0
+    },
+    {
+      "slug": "maple-cleaning-overflow",
+      "job_id": "9b36c3e9-c5ba-4736-bb59-12c304c79b76",
+      "expected_categories": [
+        "horizontal_overflow"
+      ],
+      "actual_categories": [
+        "horizontal_overflow"
+      ],
+      "true_positive_categories": 1,
+      "false_positive_categories": 0,
+      "false_negative_categories": 0,
+      "evidence_support": true,
+      "finding_count": 2
+    },
+    {
+      "slug": "cedar-electric-clean",
+      "job_id": "8737409f-5d66-495c-8b8e-1b1a1a9fc9a1",
+      "expected_categories": [],
+      "actual_categories": [],
+      "true_positive_categories": 0,
+      "false_positive_categories": 0,
+      "false_negative_categories": 0,
+      "evidence_support": true,
+      "finding_count": 0
+    }
+  ],
+  "note": "Category-level labels, not instance-level defect counts; independent review pending."
+}

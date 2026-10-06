@@ -4,6 +4,7 @@ import base64
 import json
 import os
 import signal
+import statistics
 import subprocess
 import tempfile
 from datetime import UTC, datetime
@@ -12,16 +13,18 @@ from urllib.parse import urlsplit
 
 from playwright.sync_api import sync_playwright
 
-from .security import valid_phone, validate_url
+from .preview_capture import private_document
+from .security import test_fixture_url, valid_phone, validate_url
 
 VIEWPORTS = {"desktop": {"width": 1440, "height": 1000}, "mobile": {"width": 390, "height": 844}}
-EXTRACT = """() => { const selector = e => { let parts=[]; while(e&&e.nodeType===1){let tag=e.tagName.toLowerCase();let siblings=e.parentElement?[...e.parentElement.children].filter(n=>n.tagName===e.tagName):[e];parts.unshift(tag+':nth-of-type('+(siblings.indexOf(e)+1)+')');e=e.parentElement;} return parts.join(' > '); }; const pick = s => [...document.querySelectorAll(s)].slice(0,100).map((e,i)=>({selector:selector(e),tag:e.tagName,text:(e.innerText||e.alt||'').slice(0,500),href:e.getAttribute('href'),src:e.getAttribute('src'),label:e.getAttribute('aria-label'),geometry:{x:e.getBoundingClientRect().x,y:e.getBoundingClientRect().y,width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}})); return {title:document.title,headings:pick('h1,h2,h3'),navigation:pick('nav a'),links:pick('a'),buttons:pick('button,input'),images:pick('img'),text:document.body.innerText.slice(0,16000),overflow:document.documentElement.scrollWidth>innerWidth}; }"""
+EXTRACT = """() => { const selector = e => { let parts=[]; while(e&&e.nodeType===1){let tag=e.tagName.toLowerCase();let siblings=e.parentElement?[...e.parentElement.children].filter(n=>n.tagName===e.tagName):[e];parts.unshift(tag+':nth-of-type('+(siblings.indexOf(e)+1)+')');e=e.parentElement;} return parts.join(' > '); }; const pick = s => [...document.querySelectorAll(s)].slice(0,100).map((e,i)=>({selector:selector(e),tag:e.tagName,text:(e.innerText||e.alt||'').slice(0,500),href:e.getAttribute('href'),src:e.getAttribute('src'),label:e.getAttribute('aria-label'),geometry:{x:e.getBoundingClientRect().x,y:e.getBoundingClientRect().y,width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}})); return {title:document.title,headings:pick('h1,h2,h3'),services:pick('#services p,#services li,#services h3'),about:pick('#about p'),navigation:pick('nav a'),links:pick('a'),buttons:pick('button,input'),images:pick('img'),text:document.body.innerText.slice(0,16000),overflow:document.documentElement.scrollWidth>innerWidth}; }"""
 
 
-def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=None, axe_path=None, source_url=None):
+def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=None, axe_path=None, source_url=None, cancel_event=None):
     if url is not None and proxy is None:
         raise ValueError("Live URL capture requires isolated egress proxy")
     evidence, screenshots, facts = [], [], []
+    lighthouse_html = html
     stamp = datetime.now(UTC).isoformat()
     source_url = source_url or url or "private-preview"
     canonical_url = source_url
@@ -32,6 +35,8 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
             proxy={"server": proxy, "bypass": ""} if proxy else None,
         )
         for viewport, size in VIEWPORTS.items():
+            if cancel_event is not None and cancel_event.is_set():
+                break
             context = browser.new_context(
                 viewport=size, service_workers="block", accept_downloads=False, locale="en-US", timezone_id="UTC"
             )
@@ -67,6 +72,8 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
                     response = page.goto(url, wait_until="domcontentloaded", timeout=20000)
                     navigation_status = response.status if response else None
                     source_url = validate_url(page.url, resolve=False)
+                    if test_fixture_url(url):
+                        lighthouse_html = page.content()
                     if viewport == "desktop":
                         canonical_url = source_url
                 page.wait_for_timeout(500)
@@ -108,7 +115,9 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
                         "contact_visible",
                         any(
                             a["geometry"]["y"] >= 0
-                            and a["geometry"]["y"] < size["height"]
+                            and a["geometry"]["y"] + a["geometry"]["height"] <= size["height"]
+                            and a["geometry"]["x"] >= 0
+                            and a["geometry"]["x"] + a["geometry"]["width"] <= size["width"]
                             and a["geometry"]["width"] > 0
                             for a in contacts
                         ),
@@ -134,6 +143,7 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
                                 "id": "axe-" + viewport + "-" + violation["id"],
                                 "kind": "axe",
                                 "viewport": viewport,
+                                "tool_version": axe.get("testEngine", {}).get("version"),
                             }
                         )
                     checks.append(("axe", not any(v["impact"] in ("critical", "serious") for v in axe["violations"])))
@@ -226,7 +236,7 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
                                 }
                             )
                     for i, heading in enumerate(dom["headings"]):
-                        if heading["tag"] == "H2" and heading["text"].strip():
+                        if heading["tag"] == "H2" and heading["text"].strip() and heading["text"].strip().lower() not in ("services", "about", "contact", "our services"):
                             facts.append(
                                 {
                                     "id": "fact-service-" + str(i),
@@ -239,6 +249,9 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
                                     "uncertainty": "Heading treated as candidate service; human approval required",
                                 }
                             )
+                    for i, service in enumerate(dom.get("services", [])):
+                        if service["text"].strip():
+                            facts.append({"id": f"fact-service-content-{i}", "kind": "service", "value": service["text"].strip(), "source_url": source_url, "evidence_id": eid, "captured_at": stamp, "approved": False, "uncertainty": "Service-section copy; human approval required"})
             except Exception as exc:
                 evidence.append(
                     {
@@ -253,8 +266,28 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
         browser.close()
         chrome_path = executable_path or p.chromium.executable_path
     # Stop the Playwright driver too: its threads count against the same fixed PID limit.
-    for viewport in VIEWPORTS:
-        evidence.append(lighthouse_evidence(url, viewport, chrome_path, proxy))
+    with private_document(lighthouse_html) as private_url:
+        measurement_url = private_url or url
+        for viewport in VIEWPORTS:
+            samples = []
+            for _ in range(2):
+                if cancel_event is not None and cancel_event.is_set():
+                    break
+                samples.append(lighthouse_evidence(measurement_url, viewport, chrome_path, proxy, private=bool(private_url)))
+            if len(samples) != 2:
+                evidence.append({"id": "capture-cancelled", "kind": "unavailable", "name": "capture", "reason": "Worker disconnected; remaining measurements cancelled"})
+                break
+            first = samples[0]
+            first["network_policy"] = "isolated-capability-loopback" if private_url else "validated-egress-proxy"
+            first["document_source"] = "captured controlled static fixture" if private_url and url else "private rendered document" if private_url else "public URL"
+            first["measurement_policy"] = "two runs, median category scores; no conversion inference"
+            first["samples"] = [{"kind": x["kind"], "categories": x.get("categories"), "reason": x.get("reason")} for x in samples]
+            first["sample_count"] = sum(x["kind"] == "lighthouse" for x in samples)
+            if first["sample_count"] != 2:
+                first.update(kind="unavailable", name="lighthouse", reason="Repeated Lighthouse measurement incomplete")
+            else:
+                first["median_scores"] = {name: statistics.median(x["categories"][name]["score"] for x in samples if x["categories"][name]["score"] is not None) for name in first["categories"] if all(x["categories"][name]["score"] is not None for x in samples)}
+            evidence.append(first)
     return {
         "evidence": evidence,
         "screenshots": screenshots,
@@ -264,7 +297,7 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
     }
 
 
-def lighthouse_evidence(url, viewport, executable_path, proxy):
+def lighthouse_evidence(url, viewport, executable_path, proxy, *, private=False):
     evidence = []
     if url:
         try:
@@ -278,7 +311,7 @@ def lighthouse_evidence(url, viewport, executable_path, proxy):
                             url,
                             "--output=json",
                             "--output-path=" + report,
-                            f"--chrome-flags=--headless --no-sandbox --disable-dev-shm-usage --renderer-process-limit=2 --user-data-dir={profile} --proxy-server={proxy} --proxy-bypass-list=<-loopback>",
+                            f"--chrome-flags=--headless --no-sandbox --disable-dev-shm-usage --renderer-process-limit=2 --user-data-dir={profile} --proxy-server={proxy} --proxy-bypass-list={'127.0.0.1' if private else '<-loopback>'}",
                             "--only-categories=performance,accessibility,best-practices,seo",
                             "--quiet",
                             *(
@@ -306,7 +339,7 @@ def lighthouse_evidence(url, viewport, executable_path, proxy):
                     )
                 finally:
                     cleanup_chrome_profile(profile)
-                lighthouse = json.loads(Path(report).read_text())
+                lighthouse = json.loads(Path(report).read_text().replace(url, "isolated-private-preview") if private else Path(report).read_text())
                 if lighthouse.get("runtimeError"):
                     raise ValueError("Lighthouse runtime error: " + str(lighthouse["runtimeError"])[:500])
                 evidence.append(
@@ -332,7 +365,7 @@ def lighthouse_evidence(url, viewport, executable_path, proxy):
                     "reason": "Measurement failed or timed out",
                     "error_type": type(exc).__name__,
                     "return_code": getattr(exc, "returncode", None),
-                    "detail": diagnostic[-1200:] or str(exc)[:500],
+                    "detail": "Private preview measurement failed; capability URL withheld" if private else diagnostic[-1200:] or str(exc)[:500],
                 }
             )
     else:

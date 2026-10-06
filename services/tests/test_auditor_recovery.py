@@ -150,7 +150,7 @@ def test_timeout_leaves_uncertain_marker_and_no_replay(monkeypatch):
     assert len(calls) == 1
 
 
-def test_explicit_rate_limit_rejection_can_retry(monkeypatch):
+def test_paid_rate_limit_rejection_cannot_retry(monkeypatch):
     import httpx
 
     state = stateful_connection(monkeypatch)
@@ -163,5 +163,6 @@ def test_explicit_rate_limit_rejection_can_retry(monkeypatch):
 
     with pytest.raises(httpx.HTTPStatusError):
         journal.once("t", "j", "audit", rejection, paid=True)
-    assert state["row"] is None
-    assert journal.once("t", "j", "audit", lambda: {"tokens": 4}, paid=True) == {"tokens": 4}
+    assert state["row"]["status"] == "started"
+    with pytest.raises(ValueError, match="Uncertain"):
+        journal.once("t", "j", "audit", lambda: {"tokens": 4}, paid=True)

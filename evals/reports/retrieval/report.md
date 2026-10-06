@@ -1,6 +1,6 @@
 # Observed local retrieval smoke evaluation
 
-Generated 2026-10-06T12:25:40.753864+00:00. Queries: 4.
+Generated 2026-10-06T20:29:00.579918+00:00. Queries: 4.
 
 Real small guidance corpus, local token-overlap title/body ranks, actual application RRF; independent of auditor.
 

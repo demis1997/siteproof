@@ -1,6 +1,6 @@
 # Observed contract evaluation
 
-Generated 2026-10-06T12:25:40.393541+00:00. Samples: 9.
+Generated 2026-10-06T20:27:43.052168+00:00. Samples: 9.
 
 Static HTML contact/label extraction and actual deterministic auditor/verification contracts; not browser or model quality.
 
@@ -15,8 +15,8 @@ Static HTML contact/label extraction and actual deterministic auditor/verificati
 - complete_checks_contract_acceptance: True
 - hypothesis_remains_unverified: True
 - contact_fact_mutation_rejection: True
-- p50_contract_latency_seconds: 0.00019358398276381195
-- p95_contract_latency_seconds: 0.0008387500129174441
+- p50_contract_latency_seconds: 0.00020462501561269164
+- p95_contract_latency_seconds: 0.0009369169711135328
 - retrieval_recall_at_k: unavailable
 - targeted_browser_repair_success: unavailable
 - new_browser_regression_rate: unavailable

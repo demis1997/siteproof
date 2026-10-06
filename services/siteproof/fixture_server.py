@@ -3,7 +3,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-NAMES = {"clean": "clean", "overflow": "overflow", "broken-contact": "broken_contact",
+NAMES = {"maple-cleaning-clean": "maple_cleaning_clean", "maple-cleaning-overflow": "maple_cleaning_overflow", "cedar-electric-clean": "cedar_electric_clean", "cedar-electric-overflow": "cedar_electric_overflow", "clean": "clean", "overflow": "overflow", "broken-contact": "broken_contact",
          "missing-labels": "missing_labels", "conflicting-facts": "conflicting_facts",
          "prompt-injection": "prompt_injection"}
 

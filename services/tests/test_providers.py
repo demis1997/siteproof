@@ -59,6 +59,7 @@ def mock_chat(monkeypatch, finding):
     from siteproof import providers
 
     class FakeResponse:
+        is_error = False
         def raise_for_status(self):
             pass
 

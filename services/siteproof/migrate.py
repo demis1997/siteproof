@@ -8,7 +8,8 @@ from .db import connection
 
 def main():
     with connection() as conn:
-        conn.execute(Path("infra/001_initial.sql").read_text())
+        for migration in sorted(Path("infra").glob("[0-9][0-9][0-9]_*.sql")):
+            conn.execute(migration.read_text())
         corpus = json.loads(Path("knowledge/guidance.json").read_text())
         for tenant in settings.tenant_keys():
             conn.execute("INSERT INTO tenants(id,name) VALUES(%s,%s) ON CONFLICT(id) DO NOTHING", (tenant, tenant))

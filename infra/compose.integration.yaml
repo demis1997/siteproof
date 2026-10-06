@@ -3,6 +3,10 @@ services:
   init:
     environment: &integration
       SITEPROOF_MODE: fixture
+      SITEPROOF_MODEL_KEY: ''
+      SITEPROOF_EMBEDDING_KEY: ''
+      SITEPROOF_EMBEDDING_USE_MODEL_CREDENTIALS: 'false'
+      SITEPROOF_RERANK_URL: ''
       SITEPROOF_TEST_FIXTURE_HTTP: 'true'
       SITEPROOF_TENANT_KEYS_JSON: '{"integration":"integration-key","other":"other-key"}'
   api:

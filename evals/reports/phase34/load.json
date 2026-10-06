@@ -1,0 +1,28 @@
+{
+  "mode": "fixture",
+  "sample_size": 3,
+  "submission_concurrency": 1,
+  "worker_count": 1,
+  "per_domain_limit": 1,
+  "browser_limit": 1,
+  "hardware": {
+    "host_platform": "macOS-26.5.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "docker": "14 CPUs, 8217473024 bytes"
+  },
+  "completion_count": 3,
+  "failures": [],
+  "p50_latency_seconds": 114.35646620899206,
+  "p95_latency_seconds": 187.61313141696155,
+  "latencies_seconds": [
+    63.37144087499473,
+    114.35646620899206,
+    187.61313141696155
+  ],
+  "limitations": [
+    "Small fixture-provider queue burst; not live inference capacity or a scalability benchmark.",
+    "Latency measured from shared submission start to each observed completion.",
+    "This local observation used three closely spaced sequential HTTP submissions; future harness uses concurrent requests."
+  ],
+  "queued_burst_size": 3
+}

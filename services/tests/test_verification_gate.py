@@ -92,6 +92,7 @@ def test_repair_loop_stops_after_two_repairs_and_requests_review(monkeypatch):
     monkeypatch.setattr(workflow.db, "get_job", lambda *args: {"status": "verifying"})
     monkeypatch.setattr(workflow.db, "update_job", lambda t, j, status, *args, **kwargs: statuses.append(status))
     monkeypatch.setattr(workflow.db, "save_records", lambda *args: None)
+    monkeypatch.setattr(workflow, "once", lambda t, j, step, operation, **kwargs: operation())
 
     def capture(state, **kwargs):
         calls["capture"] += 1
@@ -99,6 +100,7 @@ def test_repair_loop_stops_after_two_repairs_and_requests_review(monkeypatch):
         for item in evidence:
             if item["name"] == "horizontal_overflow":
                 item["passed"] = False
+        evidence += [{"id": "lh-"+v, "kind": "lighthouse", "viewport": v, "sample_count": 2} for v in VIEWPORTS]
         return {"evidence": evidence}
 
     def render(state):
@@ -112,7 +114,7 @@ def test_repair_loop_stops_after_two_repairs_and_requests_review(monkeypatch):
         "job_id": "job",
         "action": "redesign",
         "findings": [],
-        "evidence": [],
+        "evidence": [{"id": "lh-"+v, "kind": "lighthouse", "viewport": v, "sample_count": 2} for v in VIEWPORTS],
         "facts": [],
         "spec": spec(),
         "html": "<html></html>",
