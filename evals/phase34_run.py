@@ -78,7 +78,7 @@ def main():
     (OUT/'faults.json').write_text(json.dumps(faults,indent=2))
     print('Real regression/repair/exhaustion PASS',flush=True)
     # Three simultaneous submissions; domain and browser concurrency stay one.
-    submitted=time.monotonic()
+    submitted_utc=datetime.now(UTC)
     slugs=['maple-cleaning-clean','maple-cleaning-overflow','cedar-electric-clean']
     with ThreadPoolExecutor(max_workers=3) as pool:
         ids=list(pool.map(create,slugs))
@@ -87,7 +87,8 @@ def main():
     development=[]
     for i in ids:
         j=wait(i)
-        duration=time.monotonic()-submitted
+        duration=(datetime.fromisoformat(j["updated_at"])-submitted_utc).total_seconds()
+        assert duration>=0, "Host/container clock skew invalidates latency measurement"
         durations.append(duration)
         if j['status']!='needs_review' or j.get('error'): failures.append({'job_id':i,'error':j.get('error')})
         observed=request('GET',f'/api/jobs/{i}/findings')['items']
@@ -96,7 +97,7 @@ def main():
         captured=request('GET',f'/api/jobs/{i}/evidence')['items']
         available={e['id'] for e in captured}
         development.append({'slug':slugs[ids.index(i)],'job_id':i,'expected_categories':sorted(expected),'actual_categories':sorted(actual),'true_positive_categories':len(actual & expected),'false_positive_categories':len(actual-expected),'false_negative_categories':len(expected-actual),'evidence_support':all(set(f['evidence_ids'])<=available for f in observed),'finding_count':len(observed)})
-    load={'mode':'fixture','sample_size':3,'submission_concurrency':3,'worker_count':1,'per_domain_limit':1,'browser_limit':1,'hardware':{'host_platform':platform.platform(),'machine':platform.machine(),'docker':subprocess.run(['docker','info','--format','{{.NCPU}} CPUs, {{.MemTotal}} bytes'],capture_output=True,text=True,check=True).stdout.strip()},'completion_count':3-len(failures),'failures':failures,'p50_latency_seconds':statistics.median(durations),'p95_latency_seconds':max(durations),'latencies_seconds':durations,'limitations':['Small fixture-provider queue burst; not live inference capacity or a scalability benchmark.','Latency measured from shared submission start to each observed completion.']}
+    load={'mode':'fixture','sample_size':3,'submission_concurrency':3,'worker_count':1,'per_domain_limit':1,'browser_limit':1,'hardware':{'host_platform':platform.platform(),'machine':platform.machine(),'docker':subprocess.run(['docker','info','--format','{{.NCPU}} CPUs, {{.MemTotal}} bytes'],capture_output=True,text=True,check=True).stdout.strip()},'completion_count':3-len(failures),'failures':failures,'p50_latency_seconds':statistics.median(durations),'p95_latency_seconds':max(durations),'latencies_seconds':durations,'submission_started_at':submitted_utc.isoformat(),'limitations':['Small fixture-provider queue burst; not live inference capacity or a scalability benchmark.','Latency uses persisted review-state updated_at minus shared submission start, including queue wait; host/container clocks must agree.']}
     (OUT/'development.json').write_text(json.dumps({'split':'dev','labels_author':'coding-agent','samples':development,'note':'Category-level labels, not instance-level defect counts; independent review pending.'},indent=2))
     (OUT/'load.json').write_text(json.dumps(load,indent=2))
     assert not failures,failures
