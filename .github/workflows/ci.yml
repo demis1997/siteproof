@@ -103,12 +103,12 @@ jobs:
           echo 'SITEPROOF_TEST_FIXTURE_HTTP=true' >> .env
           echo 'SITEPROOF_TENANT_KEYS_JSON={"integration":"integration-key","other":"other-key"}' >> .env
       - name: Start real services and migrate
-        run: docker compose --env-file .env -f infra/compose.yaml --profile integration up --build -d
+        run: docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration up --build -d
       - name: Audit and recovery through real stack
         run: python evals/stack_run.py
       - name: Collect diagnostics
         if: always()
-        run: docker compose --env-file .env -f infra/compose.yaml --profile integration logs --no-color > evals/reports/stack-services.log
+        run: docker compose --env-file .env -f infra/compose.yaml -f infra/compose.integration.yaml --profile integration -p siteproof-integration logs --no-color > evals/reports/stack-services.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:

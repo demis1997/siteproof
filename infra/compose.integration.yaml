@@ -1,0 +1,19 @@
+# Use only with an isolated project name. No live credentials or production URL exceptions.
+services:
+  init:
+    environment: &integration
+      SITEPROOF_MODE: fixture
+      SITEPROOF_TEST_FIXTURE_HTTP: 'true'
+      SITEPROOF_TENANT_KEYS_JSON: '{"integration":"integration-key","other":"other-key"}'
+  api:
+    environment: *integration
+  worker:
+    environment: *integration
+  browser:
+    environment:
+      SITEPROOF_MODE: fixture
+      SITEPROOF_TEST_FIXTURE_HTTP: 'true'
+  proxy:
+    environment:
+      SITEPROOF_MODE: fixture
+      SITEPROOF_TEST_FIXTURE_HTTP: 'true'

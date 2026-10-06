@@ -128,10 +128,11 @@ def capture(url=None, html=None, *, proxy="http://proxy:8080", executable_path=N
                     for violation in axe["violations"]:
                         evidence.append(
                             {
+                                **violation,
+                                "audit_id": violation["id"],
                                 "id": "axe-" + viewport + "-" + violation["id"],
                                 "kind": "axe",
                                 "viewport": viewport,
-                                **violation,
                             }
                         )
                     checks.append(("axe", not any(v["impact"] in ("critical", "serious") for v in axe["violations"])))

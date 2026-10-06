@@ -9,7 +9,7 @@ from playwright.sync_api import sync_playwright
 
 API = "http://127.0.0.1:8000"
 HEADERS = {"X-Tenant-Key": "integration-key"}
-COMPOSE = ["docker", "compose", "--env-file", ".env", "-f", "infra/compose.yaml", "--profile", "integration"]
+COMPOSE = ["docker", "compose", "--env-file", ".env", "-f", "infra/compose.yaml", "-f", "infra/compose.integration.yaml", "--profile", "integration", "-p", "siteproof-integration"]
 
 
 def compose(*args):
@@ -76,6 +76,8 @@ def main():
         assert httpx.get(API + f"/api/jobs/{identifier}", headers={"X-Tenant-Key": "other-key"}).status_code == 404
         if slug == "overflow":
             assert any(e.get("name") == "horizontal_overflow" and e["viewport"] == "mobile" and not e["passed"] for e in evidence)
+        if slug == "conflicting-facts":
+            assert len({f["value"] for f in facts if f["kind"] == "phone"}) == 2
         if slug == "missing-labels":
             assert any(e["kind"] == "axe" and "label" in e["id"] for e in evidence)
         if slug == "clean":
@@ -100,7 +102,7 @@ def main():
         page.get_by_role("button").filter(has_text="http://fixture.siteproof.test/overflow").click()
         page.locator(".evidence img").first.wait_for()
         assert page.locator(".fixture").is_visible()
-        assert page.locator(".evidence img").evaluate_all("imgs=>imgs.length===2 && imgs.every(i=>i.complete&&i.naturalWidth>0)")
+        page.wait_for_function("()=>{const imgs=[...document.querySelectorAll('.evidence img')];return imgs.length===2&&imgs.every(i=>i.complete&&i.naturalWidth>0)}")
         page.get_by_role("tab", name="Findings", exact=True).click()
         page.locator(".evidence-links button").first.click()
         assert page.get_by_role("tabpanel", name="Evidence", exact=True).is_visible()
