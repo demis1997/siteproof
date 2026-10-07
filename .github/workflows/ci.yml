@@ -2,9 +2,12 @@ name: SiteProof checks
 on:
   push:
   pull_request:
+permissions:
+  contents: read
 jobs:
   backend:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -26,6 +29,7 @@ jobs:
           path: evals/reports
   frontend:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: apps/web
@@ -43,6 +47,7 @@ jobs:
       - run: npm run test:renderer
   browser-slice:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
